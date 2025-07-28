@@ -1,0 +1,126 @@
+{
+  "document_title": "CLIA Laboratory Requirements for LDTs",
+  "document_type": "regulatory_guidance",
+  "last_updated": "2024-01-15",
+  "sections": {
+    "personnel_requirements": {
+      "description": "CLIA personnel qualification requirements for laboratory developed tests",
+      "requirements": [
+        {
+          "role": "Laboratory Director",
+          "qualifications": [
+            "MD, DO, or doctoral degree in chemical, physical, biological, or clinical laboratory science",
+            "Board certification in laboratory medicine or pathology",
+            "Minimum 4 years laboratory training or experience"
+          ],
+          "responsibilities": [
+            "Overall operation and administration of the laboratory",
+            "Selection of test methods and establishment of laboratory test performance",
+            "Verification of test performance prior to reporting results"
+          ]
+        },
+        {
+          "role": "Technical Supervisor", 
+          "qualifications": [
+            "Doctoral degree in chemical, physical, biological, or clinical laboratory science",
+            "Minimum 2 years laboratory training or experience in high complexity testing"
+          ],
+          "responsibilities": [
+            "Technical supervision of high complexity test performance",
+            "Verification of test procedures",
+            "Resolution of technical problems"
+          ]
+        },
+        {
+          "role": "Clinical Consultant",
+          "qualifications": [
+            "MD or DO with laboratory training or experience",
+            "Board certification in anatomic or clinical pathology"
+          ],
+          "responsibilities": [
+            "Consultation regarding diagnosis, treatment, and management of patient care",
+            "Correlation of test results with clinical findings"
+          ]
+        }
+      ]
+    },
+    "quality_control": {
+      "description": "Quality control requirements for laboratory developed tests under CLIA",
+      "daily_requirements": [
+        "Two levels of control materials must be analyzed each day testing is performed",
+        "Control materials must be included with each batch of patient specimens",
+        "Control results must be within established limits before reporting patient results"
+      ],
+      "control_materials": [
+        "Must be appropriate for the test system",
+        "Must cover the reportable range of the test",
+        "Must be treated the same as patient specimens"
+      ],
+      "documentation": [
+        "Control results must be documented",
+        "Out-of-control situations must be documented with corrective action",
+        "Control charts should be maintained when applicable"
+      ]
+    },
+    "method_validation": {
+      "description": "CLIA validation requirements for laboratory developed tests",
+      "validation_elements": [
+        {
+          "parameter": "Accuracy",
+          "requirement": "Compare test results with a reference method or reference materials",
+          "acceptance_criteria": "Results must correlate appropriately with expected values"
+        },
+        {
+          "parameter": "Precision",
+          "requirement": "Assess repeatability and reproducibility using appropriate specimens",
+          "acceptance_criteria": "Coefficient of variation must be within acceptable limits"
+        },
+        {
+          "parameter": "Analytical Measurement Range",
+          "requirement": "Establish the range of test values over which the laboratory can report accurate results",
+          "acceptance_criteria": "Linear range must be established and verified"
+        },
+        {
+          "parameter": "Reference Intervals",
+          "requirement": "Establish appropriate reference intervals for the patient population served",
+          "acceptance_criteria": "Intervals must be appropriate for demographics and methodology"
+        }
+      ]
+    },
+    "proficiency_testing": {
+      "description": "CLIA proficiency testing requirements",
+      "requirements": [
+        "Laboratories must participate in proficiency testing for regulated analytes",
+        "Must achieve satisfactory performance scores",
+        "Unsuccessful proficiency testing requires corrective action"
+      ],
+      "scoring_criteria": [
+        "Must achieve acceptable performance on 4 out of 5 consecutive testing events",
+        "Two consecutive unsatisfactory scores require remedial action",
+        "Three consecutive failures may result in sanctions"
+      ]
+    },
+    "recordkeeping": {
+      "description": "CLIA record retention requirements",
+      "retention_periods": {
+        "test_requisitions": "2 years",
+        "test_procedures": "2 years from discontinuation",
+        "quality_control_records": "2 years", 
+        "proficiency_testing_records": "2 years",
+        "personnel_records": "2 years after termination"
+      },
+      "record_contents": [
+        "Patient identification",
+        "Test requisition information",
+        "Test results and reference ranges",
+        "Identity of person performing test",
+        "Date and time of specimen collection and testing"
+      ]
+    }
+  },
+  "references": [
+    "42 CFR 493 - Laboratory Requirements",
+    "CLIA Program Guidance",
+    "CMS State Operations Manual"
+  ]
+}
