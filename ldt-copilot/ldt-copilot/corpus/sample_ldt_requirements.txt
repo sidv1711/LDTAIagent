@@ -1,0 +1,67 @@
+# Sample FDA/CLIA LDT Requirements Document
+
+## Laboratory Developed Test Regulatory Requirements
+
+### Intended Use
+The intended use statement must clearly define:
+- Target population (age, gender, medical conditions)
+- Analyte(s) being measured
+- Clinical condition or disease state being assessed
+- Sample type and collection requirements
+- Any limitations or contraindications
+
+### Analytical Validity
+Analytical validation must demonstrate:
+- Limit of Detection (LoD) - lowest detectable concentration
+- Limit of Blank (LoB) - measurement value below which results are not detectable
+- Precision studies including repeatability and reproducibility
+- Linearity across the measuring range
+- Accuracy studies using certified reference materials
+- Interference studies from common substances
+- Sample stability under various storage conditions
+
+### Clinical Validity
+Clinical validation requires:
+- Clinical sensitivity and specificity data
+- Positive and negative predictive values
+- Comparison with predicate devices or reference methods
+- Clinical study with appropriate patient population
+- Statistical analysis of clinical performance
+- Correlation with clinical outcomes where applicable
+
+### Quality System Requirements
+Quality system documentation must reference:
+- 21 CFR Part 820 Quality System Regulation
+- ISO 13485 Medical Device Quality Management
+- Document control procedures
+- Design controls for test development
+- Corrective and Preventive Actions (CAPA)
+- Training and competency requirements
+- Management responsibility
+
+### Risk Assessment
+Risk management must include:
+- Failure Mode and Effects Analysis (FMEA)
+- Hazard identification and analysis
+- Risk mitigation strategies and controls
+- Clinical risk evaluation
+- Post-market surveillance plan
+- Risk-benefit analysis documentation
+
+### CLIA Requirements
+Clinical Laboratory Improvement Amendments require:
+- Personnel qualifications and competency
+- Quality control procedures
+- Proficiency testing participation
+- Method validation documentation
+- Quality assurance programs
+- Record keeping requirements
+
+### Labeling Requirements (21 CFR 809)
+Test labeling must include:
+- Intended use statement
+- Performance characteristics
+- Limitations and warnings
+- Quality control procedures
+- Specimen collection and handling
+- Interpretation of results
