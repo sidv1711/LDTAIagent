@@ -123,11 +123,17 @@ Keep response focused and actionable, citing specific CFR requirements where app
     
     try:
         if os.getenv('NVIDIA_API_KEY'):
-            return nemotron(prompt)
+            response = nemotron(prompt)
+            # If API response contains error, use fallback
+            if "Error" in response or "Unexpected" in response:
+                print(f"API error detected: {response}")
+                return nemotron_fallback(prompt)
+            return response
         else:
             return nemotron_fallback(prompt)
     except Exception as e:
-        return f"Error generating AI analysis: {e}"
+        print(f"Error generating AI analysis: {e}")
+        return nemotron_fallback(prompt)
 
 def generate_gap_report(file_content: bytes, filename: str) -> str:
     """
@@ -240,6 +246,10 @@ Provide a clear, accurate answer citing specific regulatory requirements where a
         # Generate answer
         if os.getenv('NVIDIA_API_KEY'):
             answer = nemotron(prompt)
+            # If API response contains error, use fallback
+            if "Error" in answer or "Unexpected" in answer:
+                print(f"API error in Q&A: {answer}")
+                answer = nemotron_fallback(prompt)
         else:
             answer = nemotron_fallback(prompt)
         

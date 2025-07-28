@@ -2,8 +2,8 @@
 Knowledge base loader for FDA/CLIA regulatory documents
 """
 import os
-from langchain.vectorstores import FAISS
-from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import FAISS
+from langchain_huggingface import HuggingFaceEmbeddings
 
 def load_knowledge_base():
     """Load the FDA/CLIA vector store"""
