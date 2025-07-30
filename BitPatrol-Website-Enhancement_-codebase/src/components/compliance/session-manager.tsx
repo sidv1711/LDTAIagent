@@ -1,0 +1,42 @@
+"use client";
+
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { v4 as uuidv4 } from "uuid";
+import {
+  Upload,
+  FileText,
+  FolderOpen,
+  Plus,
+  Trash2,
+  Archive,
+  RefreshCw,
+  Clock,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
+  X,
+  Download,
+  ChevronRight,
+  FileSearch,
+  BarChart3,
+  Eye,
+  Play,
+  Pause,
+  Sparkles,
+  Brain,
+  History,
+  Settings,
+  MoreVertical,
+  UploadCloud,
+  FileUp,
+  Check,
+  AlertTriangle,
+  RotateCcw,
+  Package,
+  FolderPlus,
+  FileStack,
+  Activity,
+  Zap,
+  BarChart,
+  Chart

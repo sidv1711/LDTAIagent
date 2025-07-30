@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered LDT Compliance</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <h1 class="main-title">
+                        AI-Powered <span class="highlight">LDT Compliance</span>
+                    </h1>
+                    <p class="subtitle">in Minutes, Not Months</p>
+                    <p class="description">
+                        Upload your LDT submission and get instant FDA & CLIA compliance analysis with AI-powered gap identification and remediation guidance.
+                    </p>
+                </div>
+                <div class="status-badges">
+                    <div class="badge">
+                        <i class="fas fa-check"></i>
+                        FDA Guidance Updated
+                    </div>
+                    <div class="badge">
+                        <i class="fas fa-shield-alt"></i>
+                        SOC2 Certified
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-grid">
+                <!-- Left Column - Document Upload -->
+                <div class="left-column">
+                    <div class="upload-card">
+                        <div class="card-header">
+                            <i class="fas fa-file-upload"></i>
+                            <h2>Upload LDT Submission</h2>
+                        </div>
+                        <p class="card-description">
+                            Get instant FDA compliance analysis with AI-powered gap identification and remediation guidance.
+                        </p>
+                        
+                        <div class="upload-area" id="uploadArea">
+                            <div class="upload-content">
+                                <i class="fas fa-arrow-up upload-icon"></i>
+                                <h3>Drag & drop files</h3>
+                                <p>or click to browse</p>
+                                <button class="btn-primary btn-browse" onclick="document.getElementById('fileInput').click()">
+                                    Browse Files
+                                </button>
+                                <input type="file" id="fileInput" accept=".pdf,.docx,.json,.xml,.txt" style="display: none;" onchange="handleFileUpload(event)">
+                            </div>
+                        </div>
+
+                        <div class="supported-formats">
+                            <p>.pdf, .docx, .json, .xml, .txt - Max 10MB</p>
+                        </div>
+
+                        <div class="metrics-bar">
+                            <div class="metric">
+                                <i class="fas fa-chart-line"></i>
+                                <span class="metric-label">Accuracy</span>
+                                <span class="metric-value">99.7%</span>
+                            </div>
+                            <div class="metric">
+                                <i class="fas fa-stopwatch"></i>
+                                <span class="metric-label">Speed</span>
+                                <span class="metric-value">&lt;60s</span>
+                            </div>
+                            <div class="metric">
+                                <i class="fas fa-shield-alt"></i>
+                                <span class="metric-label">Validation</span>
+                                <span class="metric-value">FDA/CLIA</span>
+                            </div>
+                        </div>
+
+                        <button class="btn-analyze" id="analyzeBtn" onclick="analyzeDocument()" disabled>
+                            Please upload files first
+                        </button>
+                    </div>
+
+                    <!-- Analysis Results -->
+                    <div class="results-section" id="resultsSection" style="display: none;">
+                        <div class="results-header">
+                            <h2><i class="fas fa-chart-bar"></i> Analysis Results</h2>
+                            <div class="export-actions">
+                                <button class="btn-secondary" onclick="exportResults('pdf')">
+                                    <i class="fas fa-file-pdf"></i>
+                                    Export PDF
+                                </button>
+                                <button class="btn-secondary" onclick="exportResults('json')">
+                                    <i class="fas fa-file-code"></i>
+                                    Export JSON
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="results-content">
+                            <div class="compliance-score-card">
+                                <h3>Overall Compliance Score</h3>
+                                <div class="score-circle">
+                                    <div class="score-number" id="overallScore">0%</div>
+                                    <div class="score-label">Compliant</div>
+                                </div>
+                            </div>
+
+                            <div class="results-grid">
+                                <div class="result-card">
+                                    <h3>Missing Sections</h3>
+                                    <div class="sections-list" id="missingSections">
+                                        <!-- Dynamic content -->
+                                    </div>
+                                </div>
+
+                                <div class="result-card">
+                                    <h3>Recommendations</h3>
+                                    <div class="recommendations-list" id="recommendations">
+                                        <!-- Dynamic content -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column - Status and Q&A -->
+                <div class="right-column">
+                    <!-- Knowledge Base Status -->
+                    <div class="status-card">
+                        <div class="card-header">
+                            <i class="fas fa-circle status-dot"></i>
+                            <h3>Knowledge Base Status</h3>
+                        </div>
+                        <div class="status-list">
+                            <div class="status-item">
+                                <span class="status-name">FDA LDT Guidance</span>
+                                <span class="status-value">CURRENT</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-name">CLIA Regulations</span>
+                                <span class="status-value">CURRENT</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-name">ISO 13485</span>
+                                <span class="status-value">CURRENT</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Regulatory Q&A Assistant -->
+                    <div class="qa-card">
+                        <div class="card-header">
+                            <i class="fas fa-comments"></i>
+                            <h3>Regulatory Q&A Assistant</h3>
+                        </div>
+                        
+                        <div class="qa-questions">
+                            <button class="qa-question" onclick="askQuestion('What are my LDT analytical validation requirements?')">
+                                <span>What are my LDT analytical validation requirements?</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                            <button class="qa-question" onclick="askQuestion('Who is Elizabeth Holmes and why is LDT compliance important?')">
+                                <span>Who is Elizabeth Holmes and why is LDT compliance important?</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                            <button class="qa-question" onclick="askQuestion('What are Laboratory Developed Tests (LDTs)?')">
+                                <span>What are Laboratory Developed Tests (LDTs)?</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                            <button class="qa-question" onclick="askQuestion('What\'s the difference between FDA and CLIA regulations?')">
+                                <span>What's the difference between FDA and CLIA regulations?</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+
+                        <button class="btn-primary btn-ask" onclick="showCustomQuestion()">
+                            Ask Question
+                        </button>
+                    </div>
+
+                    <!-- Chat Section -->
+                    <div class="chat-section" id="chatSection" style="display: none;">
+                        <div class="chat-header">
+                            <h3><i class="fas fa-robot"></i> AI Assistant</h3>
+                            <button class="btn-close" onclick="hideChat()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="chat-messages" id="chatMessages">
+                            <!-- Dynamic content -->
+                        </div>
+
+                        <div class="chat-input">
+                            <input type="text" id="chatInput" placeholder="Ask about compliance requirements..." onkeypress="handleChatKeyPress(event)">
+                            <button class="btn-primary" onclick="sendMessage()">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+            <div class="loading-content">
+                <div class="spinner"></div>
+                <h3>Analyzing Document...</h3>
+                <p>This may take a few moments</p>
+            </div>
+        </div>
+
+        <!-- Custom Question Modal -->
+        <div class="modal" id="questionModal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Ask a Question</h3>
+                    <button class="modal-close" onclick="hideCustomQuestion()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <textarea id="customQuestion" placeholder="Type your compliance question here..." rows="4"></textarea>
+                    <button class="btn-primary" onclick="submitCustomQuestion()">
+                        Ask Question
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
