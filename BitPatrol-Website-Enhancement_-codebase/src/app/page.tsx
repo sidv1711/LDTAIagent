@@ -91,9 +91,6 @@ Best regards,
               <Mail className="h-5 w-5 mr-2" />
               Contact Our Founders
             </Button>
-            <p className="text-sm text-slate-400">
-              Get in touch with Sid & Akshaj directly
-            </p>
           </div>
         </div>
 
