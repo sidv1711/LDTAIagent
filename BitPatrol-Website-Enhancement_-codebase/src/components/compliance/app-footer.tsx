@@ -7,6 +7,7 @@ interface FooterLink {
   label: string
   href?: string
   onClick?: () => void
+  target?: string
 }
 
 interface FooterSection {
@@ -50,17 +51,14 @@ Best regards,
     {
       title: "Product",
       links: [
-        { label: "Compliance Analysis", href: "/compliance-analysis" },
-        { label: "Gap Reports", href: "/gap-reports" },
-        { label: "Regulatory Q&A", href: "/regulatory-qa" },
+        { label: "Compliance Analysis", href: "/" },
+        { label: "Q&A Assistant", href: "/" },
       ],
     },
     {
       title: "Resources",
       links: [
-        { label: "FDA Guidance", href: "/fda-guidance" },
-        { label: "CUA Requirements", href: "/cua-requirements" },
-        { label: "Documentation", href: "/documentation" },
+        { label: "FDA Guidance", href: "https://www.fda.gov/medical-devices/in-vitro-diagnostics/laboratory-developed-tests", target: "_blank" },
       ],
     },
     {
@@ -103,6 +101,7 @@ Best regards,
                     ) : (
                       <Link
                         href={link.href || "#"}
+                        target={link.target}
                         className="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 transition-colors duration-200"
                       >
                         {link.label}
