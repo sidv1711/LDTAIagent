@@ -17,77 +17,93 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$LDTAIagent$2d$3$2f$BitPatrol
 ;
 ;
 ;
-const footerSections = [
-    {
-        title: "Product",
-        links: [
-            {
-                label: "Compliance Analysis",
-                href: "/compliance-analysis"
-            },
-            {
-                label: "Gap Reports",
-                href: "/gap-reports"
-            },
-            {
-                label: "Regulatory Q&A",
-                href: "/regulatory-qa"
-            }
-        ]
-    },
-    {
-        title: "Resources",
-        links: [
-            {
-                label: "FDA Guidance",
-                href: "/fda-guidance"
-            },
-            {
-                label: "CUA Requirements",
-                href: "/cua-requirements"
-            },
-            {
-                label: "Documentation",
-                href: "/documentation"
-            }
-        ]
-    },
-    {
-        title: "Support",
-        links: [
-            {
-                label: "Help Center",
-                href: "/help-center"
-            },
-            {
-                label: "Contact Us",
-                href: "/contact"
-            },
-            {
-                label: "API Status",
-                href: "/api-status"
-            }
-        ]
-    },
-    {
-        title: "Legal",
-        links: [
-            {
-                label: "Privacy Policy",
-                href: "/privacy-policy"
-            },
-            {
-                label: "Terms of Service",
-                href: "/terms-of-service"
-            },
-            {
-                label: "Security",
-                href: "/security"
-            }
-        ]
-    }
-];
 function AppFooter() {
+    const handleContactUs = ()=>{
+        const founders = [
+            "sidv@berkeley.edu",
+            "akshajmolukutla@berkeley.edu"
+        ];
+        const subject = "LDT Compliance Platform - Inquiry";
+        const message = `Dear Sid and Akshaj,
+
+I'm interested in learning more about your LDT Compliance Platform.
+
+Could you please provide more information about:
+- Pricing and plans
+- Integration options  
+- Custom features
+- Demo availability
+- Technical support
+
+Thank you!
+
+Best regards,
+[Your Name]
+[Your Organization]`;
+        // Create mailto link with both founders
+        const mailtoLink = `mailto:${founders.join(',')}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
+        // Open default email client
+        window.open(mailtoLink, '_blank');
+    };
+    const footerSections = [
+        {
+            title: "Product",
+            links: [
+                {
+                    label: "Compliance Analysis",
+                    href: "/"
+                },
+                {
+                    label: "Q&A Assistant",
+                    href: "/"
+                }
+            ]
+        },
+        {
+            title: "Resources",
+            links: [
+                {
+                    label: "FDA Guidance",
+                    href: "https://www.fda.gov/medical-devices/in-vitro-diagnostics/laboratory-developed-tests",
+                    target: "_blank"
+                }
+            ]
+        },
+        {
+            title: "Support",
+            links: [
+                {
+                    label: "Help Center",
+                    href: "/help-center"
+                },
+                {
+                    label: "Contact Us",
+                    onClick: handleContactUs
+                },
+                {
+                    label: "API Status",
+                    href: "/api-status"
+                }
+            ]
+        },
+        {
+            title: "Legal",
+            links: [
+                {
+                    label: "Privacy Policy",
+                    href: "/privacy-policy"
+                },
+                {
+                    label: "Terms of Service",
+                    href: "/terms-of-service"
+                },
+                {
+                    label: "Security",
+                    href: "/security"
+                }
+            ]
+        }
+    ];
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$LDTAIagent$2d$3$2f$BitPatrol$2d$Website$2d$Enhancement_$2d$codebase$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("footer", {
         className: "bg-[#f8fafc] dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800",
         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$LDTAIagent$2d$3$2f$BitPatrol$2d$Website$2d$Enhancement_$2d$codebase$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -102,40 +118,49 @@ function AppFooter() {
                                     children: section.title
                                 }, void 0, false, {
                                     fileName: "[project]/LDTAIagent-3/BitPatrol-Website-Enhancement_-codebase/src/components/compliance/app-footer.tsx",
-                                    lineNumber: 58,
+                                    lineNumber: 88,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$LDTAIagent$2d$3$2f$BitPatrol$2d$Website$2d$Enhancement_$2d$codebase$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
                                     className: "space-y-3",
                                     children: section.links.map((link)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$LDTAIagent$2d$3$2f$BitPatrol$2d$Website$2d$Enhancement_$2d$codebase$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
-                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$LDTAIagent$2d$3$2f$BitPatrol$2d$Website$2d$Enhancement_$2d$codebase$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$LDTAIagent$2d$3$2f$BitPatrol$2d$Website$2d$Enhancement_$2d$codebase$2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
-                                                href: link.href,
+                                            children: link.onClick ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$LDTAIagent$2d$3$2f$BitPatrol$2d$Website$2d$Enhancement_$2d$codebase$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                onClick: link.onClick,
+                                                className: "text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 transition-colors duration-200 cursor-pointer",
+                                                children: link.label
+                                            }, void 0, false, {
+                                                fileName: "[project]/LDTAIagent-3/BitPatrol-Website-Enhancement_-codebase/src/components/compliance/app-footer.tsx",
+                                                lineNumber: 95,
+                                                columnNumber: 23
+                                            }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$LDTAIagent$2d$3$2f$BitPatrol$2d$Website$2d$Enhancement_$2d$codebase$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$LDTAIagent$2d$3$2f$BitPatrol$2d$Website$2d$Enhancement_$2d$codebase$2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
+                                                href: link.href || "#",
+                                                target: link.target,
                                                 className: "text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 transition-colors duration-200",
                                                 children: link.label
                                             }, void 0, false, {
                                                 fileName: "[project]/LDTAIagent-3/BitPatrol-Website-Enhancement_-codebase/src/components/compliance/app-footer.tsx",
-                                                lineNumber: 64,
-                                                columnNumber: 21
+                                                lineNumber: 102,
+                                                columnNumber: 23
                                             }, this)
                                         }, link.label, false, {
                                             fileName: "[project]/LDTAIagent-3/BitPatrol-Website-Enhancement_-codebase/src/components/compliance/app-footer.tsx",
-                                            lineNumber: 63,
+                                            lineNumber: 93,
                                             columnNumber: 19
                                         }, this))
                                 }, void 0, false, {
                                     fileName: "[project]/LDTAIagent-3/BitPatrol-Website-Enhancement_-codebase/src/components/compliance/app-footer.tsx",
-                                    lineNumber: 61,
+                                    lineNumber: 91,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, section.title, true, {
                             fileName: "[project]/LDTAIagent-3/BitPatrol-Website-Enhancement_-codebase/src/components/compliance/app-footer.tsx",
-                            lineNumber: 57,
+                            lineNumber: 87,
                             columnNumber: 13
                         }, this))
                 }, void 0, false, {
                     fileName: "[project]/LDTAIagent-3/BitPatrol-Website-Enhancement_-codebase/src/components/compliance/app-footer.tsx",
-                    lineNumber: 55,
+                    lineNumber: 85,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$LDTAIagent$2d$3$2f$BitPatrol$2d$Website$2d$Enhancement_$2d$codebase$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -151,7 +176,7 @@ function AppFooter() {
                                             className: "h-5 w-5 text-slate-400 dark:text-slate-500"
                                         }, void 0, false, {
                                             fileName: "[project]/LDTAIagent-3/BitPatrol-Website-Enhancement_-codebase/src/components/compliance/app-footer.tsx",
-                                            lineNumber: 80,
+                                            lineNumber: 120,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$LDTAIagent$2d$3$2f$BitPatrol$2d$Website$2d$Enhancement_$2d$codebase$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -159,13 +184,13 @@ function AppFooter() {
                                             children: "Enterprise-Grade Security"
                                         }, void 0, false, {
                                             fileName: "[project]/LDTAIagent-3/BitPatrol-Website-Enhancement_-codebase/src/components/compliance/app-footer.tsx",
-                                            lineNumber: 81,
+                                            lineNumber: 121,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/LDTAIagent-3/BitPatrol-Website-Enhancement_-codebase/src/components/compliance/app-footer.tsx",
-                                    lineNumber: 79,
+                                    lineNumber: 119,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$LDTAIagent$2d$3$2f$BitPatrol$2d$Website$2d$Enhancement_$2d$codebase$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -175,7 +200,7 @@ function AppFooter() {
                                             className: "h-4 w-4 text-slate-400 dark:text-slate-500"
                                         }, void 0, false, {
                                             fileName: "[project]/LDTAIagent-3/BitPatrol-Website-Enhancement_-codebase/src/components/compliance/app-footer.tsx",
-                                            lineNumber: 86,
+                                            lineNumber: 126,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$LDTAIagent$2d$3$2f$BitPatrol$2d$Website$2d$Enhancement_$2d$codebase$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -183,13 +208,13 @@ function AppFooter() {
                                             children: "24/7 Technical Support"
                                         }, void 0, false, {
                                             fileName: "[project]/LDTAIagent-3/BitPatrol-Website-Enhancement_-codebase/src/components/compliance/app-footer.tsx",
-                                            lineNumber: 87,
+                                            lineNumber: 127,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/LDTAIagent-3/BitPatrol-Website-Enhancement_-codebase/src/components/compliance/app-footer.tsx",
-                                    lineNumber: 85,
+                                    lineNumber: 125,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$LDTAIagent$2d$3$2f$BitPatrol$2d$Website$2d$Enhancement_$2d$codebase$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -199,7 +224,7 @@ function AppFooter() {
                                             className: "h-4 w-4 text-slate-400 dark:text-slate-500"
                                         }, void 0, false, {
                                             fileName: "[project]/LDTAIagent-3/BitPatrol-Website-Enhancement_-codebase/src/components/compliance/app-footer.tsx",
-                                            lineNumber: 92,
+                                            lineNumber: 132,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$LDTAIagent$2d$3$2f$BitPatrol$2d$Website$2d$Enhancement_$2d$codebase$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -207,55 +232,65 @@ function AppFooter() {
                                             children: "SOC 2 Compliant"
                                         }, void 0, false, {
                                             fileName: "[project]/LDTAIagent-3/BitPatrol-Website-Enhancement_-codebase/src/components/compliance/app-footer.tsx",
-                                            lineNumber: 93,
+                                            lineNumber: 133,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/LDTAIagent-3/BitPatrol-Website-Enhancement_-codebase/src/components/compliance/app-footer.tsx",
-                                    lineNumber: 91,
+                                    lineNumber: 131,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/LDTAIagent-3/BitPatrol-Website-Enhancement_-codebase/src/components/compliance/app-footer.tsx",
-                            lineNumber: 78,
+                            lineNumber: 118,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$LDTAIagent$2d$3$2f$BitPatrol$2d$Website$2d$Enhancement_$2d$codebase$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "mt-8 text-center",
-                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$LDTAIagent$2d$3$2f$BitPatrol$2d$Website$2d$Enhancement_$2d$codebase$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                className: "text-sm text-slate-500 dark:text-slate-400",
-                                children: [
-                                    "© ",
-                                    new Date().getFullYear(),
-                                    " Compliance Platform. All rights reserved."
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/LDTAIagent-3/BitPatrol-Website-Enhancement_-codebase/src/components/compliance/app-footer.tsx",
-                                lineNumber: 100,
-                                columnNumber: 13
-                            }, this)
-                        }, void 0, false, {
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$LDTAIagent$2d$3$2f$BitPatrol$2d$Website$2d$Enhancement_$2d$codebase$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                    className: "text-sm text-slate-500 dark:text-slate-400",
+                                    children: [
+                                        "© ",
+                                        new Date().getFullYear(),
+                                        " Compliance Platform. All rights reserved."
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/LDTAIagent-3/BitPatrol-Website-Enhancement_-codebase/src/components/compliance/app-footer.tsx",
+                                    lineNumber: 140,
+                                    columnNumber: 13
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$LDTAIagent$2d$3$2f$BitPatrol$2d$Website$2d$Enhancement_$2d$codebase$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                    className: "text-xs text-slate-400 dark:text-slate-500 mt-2",
+                                    children: "Founded by Sid V & Akshaj Molukutla at UC Berkeley"
+                                }, void 0, false, {
+                                    fileName: "[project]/LDTAIagent-3/BitPatrol-Website-Enhancement_-codebase/src/components/compliance/app-footer.tsx",
+                                    lineNumber: 143,
+                                    columnNumber: 13
+                                }, this)
+                            ]
+                        }, void 0, true, {
                             fileName: "[project]/LDTAIagent-3/BitPatrol-Website-Enhancement_-codebase/src/components/compliance/app-footer.tsx",
-                            lineNumber: 99,
+                            lineNumber: 139,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/LDTAIagent-3/BitPatrol-Website-Enhancement_-codebase/src/components/compliance/app-footer.tsx",
-                    lineNumber: 77,
+                    lineNumber: 117,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/LDTAIagent-3/BitPatrol-Website-Enhancement_-codebase/src/components/compliance/app-footer.tsx",
-            lineNumber: 54,
+            lineNumber: 84,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/LDTAIagent-3/BitPatrol-Website-Enhancement_-codebase/src/components/compliance/app-footer.tsx",
-        lineNumber: 53,
+        lineNumber: 83,
         columnNumber: 5
     }, this);
 }

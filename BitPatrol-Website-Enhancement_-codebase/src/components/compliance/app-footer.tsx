@@ -19,7 +19,8 @@ export default function AppFooter() {
   const handleContactUs = () => {
     const founders = [
       "sidv@berkeley.edu",
-      "akshajmolukutla@berkeley.edu"
+      "akshajmolukutla@berkeley.edu",
+      "nygmetainur@gmail.com"
     ]
     
     const subject = "LDT Compliance Platform - Inquiry"
