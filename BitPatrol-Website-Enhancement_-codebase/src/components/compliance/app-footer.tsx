@@ -141,9 +141,6 @@ Best regards,
             <p className="text-sm text-slate-500 dark:text-slate-400">
               &copy; {new Date().getFullYear()} Compliance Platform. All rights reserved.
             </p>
-            <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">
-              Founded by Sid V & Akshaj Molukutla at UC Berkeley
-            </p>
           </div>
         </div>
       </div>
