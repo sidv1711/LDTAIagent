@@ -1,0 +1,37 @@
+{
+  "[project]/LDTAIagent-3/BitPatrol-Website-Enhancement_-codebase/src/components/compliance/qa-assistant.tsx [app-client] (ecmascript, next/dynamic entry)": {
+    "id": "[project]/LDTAIagent-3/BitPatrol-Website-Enhancement_-codebase/src/components/compliance/qa-assistant.tsx [app-client] (ecmascript, next/dynamic entry)",
+    "files": [
+      "static/chunks/LDTAIagent-3_BitPatrol-Website-Enhancement_-codebase_abb6b41f._.js",
+      "static/chunks/e853c_-codebase_src_components_compliance_qa-assistant_tsx_9d279fde._.js"
+    ]
+  },
+  "[project]/LDTAIagent-3/BitPatrol-Website-Enhancement_-codebase/src/components/compliance/app-footer.tsx [app-client] (ecmascript, next/dynamic entry)": {
+    "id": "[project]/LDTAIagent-3/BitPatrol-Website-Enhancement_-codebase/src/components/compliance/app-footer.tsx [app-client] (ecmascript, next/dynamic entry)",
+    "files": [
+      "static/chunks/LDTAIagent-3_BitPatrol-Website-Enhancement_-codebase_f0f8e1fa._.js",
+      "static/chunks/2409e_-Website-Enhancement_-codebase_src_components_compliance_app-footer_tsx_9d279fde._.js"
+    ]
+  },
+  "[project]/LDTAIagent-3/BitPatrol-Website-Enhancement_-codebase/src/components/compliance/app-header.tsx [app-client] (ecmascript, next/dynamic entry)": {
+    "id": "[project]/LDTAIagent-3/BitPatrol-Website-Enhancement_-codebase/src/components/compliance/app-header.tsx [app-client] (ecmascript, next/dynamic entry)",
+    "files": [
+      "static/chunks/LDTAIagent-3_BitPatrol-Website-Enhancement_-codebase_9b5c2475._.js",
+      "static/chunks/2409e_-Website-Enhancement_-codebase_src_components_compliance_app-header_tsx_9d279fde._.js"
+    ]
+  },
+  "[project]/LDTAIagent-3/BitPatrol-Website-Enhancement_-codebase/src/components/compliance/knowledge-base-status.tsx [app-client] (ecmascript, next/dynamic entry)": {
+    "id": "[project]/LDTAIagent-3/BitPatrol-Website-Enhancement_-codebase/src/components/compliance/knowledge-base-status.tsx [app-client] (ecmascript, next/dynamic entry)",
+    "files": [
+      "static/chunks/e853c_-codebase_src_components_compliance_knowledge-base-status_tsx_2fce20c4._.js",
+      "static/chunks/e853c_-codebase_src_components_compliance_knowledge-base-status_tsx_9d279fde._.js"
+    ]
+  },
+  "[project]/LDTAIagent-3/BitPatrol-Website-Enhancement_-codebase/src/components/compliance/document-upload.tsx [app-client] (ecmascript, next/dynamic entry)": {
+    "id": "[project]/LDTAIagent-3/BitPatrol-Website-Enhancement_-codebase/src/components/compliance/document-upload.tsx [app-client] (ecmascript, next/dynamic entry)",
+    "files": [
+      "static/chunks/LDTAIagent-3_BitPatrol-Website-Enhancement_-codebase_12e15104._.js",
+      "static/chunks/e853c_-codebase_src_components_compliance_document-upload_tsx_9d279fde._.js"
+    ]
+  }
+}
