@@ -2,12 +2,17 @@
 Main agent orchestration for LDT Compliance Copilot
 """
 import os
+import logging
 from datetime import date
 from jinja2 import Template
 from typing import Dict, List, Optional
 
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
 from .gap_critic import analyze_completeness, RECOMMENDED_SECTIONS
-from .nemotron_llm import nemotron, nemotron_fallback
+from .nemotron_llm import nemotron
 from .knowledge_base import knowledge_base
 
 def extract_text_from_file(file_content: bytes, filename: str) -> str:
@@ -87,53 +92,111 @@ def get_regulatory_context(missing_sections: List[str], k: int = 3) -> List:
     
     return unique_chunks[:6]  # Limit to 6 most relevant chunks
 
+def generate_executive_summary(analysis: Dict, context_chunks: List) -> str:
+    """
+    Generate executive summary of compliance findings
+    
+    Args:
+        analysis: Complete analysis results from analyze_completeness
+        context_chunks: Relevant regulatory document chunks
+    
+    Returns:
+        Executive summary text
+    """
+    missing_count = len(analysis['missing_required'])
+    present_count = len(analysis['present_sections'])
+    total_required = analysis['total_required']
+    score = analysis['completeness_score']
+    
+    # Determine compliance status
+    if score >= 90:
+        status = "EXCELLENT"
+        risk_level = "Low Risk"
+    elif score >= 70:
+        status = "GOOD"
+        risk_level = "Moderate Risk"
+    elif score >= 40:
+        status = "MODERATE"
+        risk_level = "High Risk"
+    else:
+        status = "CRITICAL"
+        risk_level = "Very High Risk"
+    
+    # Create executive summary
+    summary = f"""
+**COMPLIANCE STATUS: {status}** (Score: {score}%)
+
+**KEY FINDINGS:**
+• {present_count} of {total_required} required sections identified and compliant
+• {missing_count} critical regulatory sections require immediate attention
+• Overall regulatory risk assessment: {risk_level}
+
+**COMPLIANCE GAPS:**
+"""
+    
+    if missing_count > 0:
+        summary += "\nThe following mandatory sections are missing from your LDT submission:\n"
+        for i, (section, desc) in enumerate(analysis['missing_required'].items(), 1):
+            summary += f"{i}. **{section}** - {desc}\n"
+    
+    summary += f"""
+
+**REGULATORY IMPACT:**
+• Submission completeness: {score}% of FDA/CLIA requirements met
+• Missing sections may result in regulatory delays or rejection
+• Compliance gaps pose {risk_level.lower()} to approval timeline
+
+**IMMEDIATE ACTIONS REQUIRED:**
+• Address all {missing_count} missing required sections
+• Ensure compliance with 21 CFR 809, 21 CFR 820, and CLIA requirements
+• Conduct comprehensive regulatory review before resubmission
+"""
+    
+    return summary
+
 def generate_ai_analysis(missing_sections: Dict[str, str], context_chunks: List) -> str:
     """
-    Generate AI analysis of missing sections with regulatory context
+    Generate detailed AI analysis of missing sections with regulatory context
     
     Args:
         missing_sections: Dictionary of missing sections and descriptions
         context_chunks: Relevant regulatory document chunks
     
     Returns:
-        AI-generated analysis text
+        AI-generated detailed analysis text
     """
     if not missing_sections:
-        return "✅ **Excellent!** Your submission appears to contain all required sections for LDT regulatory compliance."
+        return "All required regulatory sections have been identified in your submission. Please ensure each section contains comprehensive information meeting FDA and CLIA standards."
     
     # Prepare context for AI
     context_text = "\n\n".join([chunk.page_content for chunk in context_chunks[:4]])
     
     prompt = f"""
-As a regulatory compliance expert, analyze the missing sections in this LDT submission:
+As a regulatory compliance expert, provide detailed guidance for the missing sections in this LDT submission:
 
 Missing Sections: {list(missing_sections.keys())}
 
 Regulatory Context:
 {context_text}
 
-Provide specific guidance on:
-1. Why these sections are mandatory for FDA/CLIA compliance
-2. Specific requirements for each missing section
-3. Potential regulatory risks of omitting these sections
-4. Recommended next steps for the applicant
+For each missing section, provide:
+1. Specific regulatory requirements and standards
+2. Required documentation and evidence
+3. Compliance risks of omission
+4. Detailed implementation guidance
 
-Keep response focused and actionable, citing specific CFR requirements where applicable.
+Cite specific CFR sections and CLIA requirements where applicable. Focus on actionable guidance for regulatory compliance.
 """
     
     try:
-        if os.getenv('NVIDIA_API_KEY'):
-            response = nemotron(prompt)
-            # If API response contains error, use fallback
-            if "Error" in response or "Unexpected" in response:
-                print(f"API error detected: {response}")
-                return nemotron_fallback(prompt)
-            return response
-        else:
-            return nemotron_fallback(prompt)
+        logger.info("🔑 Attempting NVIDIA API call for detailed analysis")
+        response = nemotron(prompt)
+        logger.info("✅ Successfully used NVIDIA API for detailed analysis")
+        return response
     except Exception as e:
-        print(f"Error generating AI analysis: {e}")
-        return nemotron_fallback(prompt)
+        logger.error(f"❌ Error generating detailed analysis: {e}")
+        logger.error("💥 Detailed analysis failed - NVIDIA API required")
+        raise Exception(f"Detailed analysis failed: {e}")
 
 def generate_gap_report(file_content: bytes, filename: str) -> str:
     """
@@ -146,6 +209,7 @@ def generate_gap_report(file_content: bytes, filename: str) -> str:
     Returns:
         Formatted markdown report
     """
+    logger.info(f"📋 Starting gap analysis for file: {filename}")
     try:
         # Extract text from file
         text = extract_text_from_file(file_content, filename)
@@ -159,7 +223,8 @@ def generate_gap_report(file_content: bytes, filename: str) -> str:
         # Get regulatory context
         context_chunks = get_regulatory_context(list(analysis['missing_required'].keys()))
         
-        # Generate AI analysis
+        # Generate executive summary and detailed analysis
+        executive_summary = generate_executive_summary(analysis, context_chunks)
         ai_analysis = generate_ai_analysis(analysis['missing_required'], context_chunks)
         
         # Prepare template variables
@@ -169,6 +234,7 @@ def generate_gap_report(file_content: bytes, filename: str) -> str:
             'missing_sections': analysis['missing_required'],
             'recommended_sections': analysis['missing_recommended'],
             'present_sections': analysis['present_sections'],
+            'executive_summary': executive_summary,
             'ai_analysis': ai_analysis,
             'regulatory_sources': context_chunks
         }
@@ -219,6 +285,7 @@ def ask_compliance_question(question: str) -> Dict:
     Returns:
         Dictionary with answer and sources
     """
+    logger.info(f"❓ Processing compliance question: {question[:50]}...")
     if not knowledge_base:
         return {
             'answer': 'Knowledge base not available. Please build the vector store first.',
@@ -244,14 +311,9 @@ Provide a clear, accurate answer citing specific regulatory requirements where a
 """
         
         # Generate answer
-        if os.getenv('NVIDIA_API_KEY'):
-            answer = nemotron(prompt)
-            # If API response contains error, use fallback
-            if "Error" in answer or "Unexpected" in answer:
-                print(f"API error in Q&A: {answer}")
-                answer = nemotron_fallback(prompt)
-        else:
-            answer = nemotron_fallback(prompt)
+        logger.info("🔑 Attempting NVIDIA API call for Q&A")
+        answer = nemotron(prompt)
+        logger.info("✅ Successfully used NVIDIA API for Q&A")
         
         return {
             'answer': answer,
@@ -259,15 +321,13 @@ Provide a clear, accurate answer citing specific regulatory requirements where a
         }
         
     except Exception as e:
-        return {
-            'answer': f'Error processing question: {e}',
-            'sources': []
-        }
+        logger.error(f"❌ Q&A processing failed: {e}")
+        raise Exception(f"Question processing failed: {e}")
 
 # Test function
 def test_agent():
     """Test the agent functionality"""
-    print("Testing LDT Compliance Copilot Agent...")
+    logger.info("🧪 Testing LDT Compliance Copilot Agent...")
     
     # Test sample text
     sample_text = """
@@ -278,17 +338,17 @@ def test_agent():
     Clinical study included 50 patients.
     """
     
-    print("\n1. Testing gap analysis...")
+    logger.info("\n1. Testing gap analysis...")
     analysis = analyze_completeness(sample_text)
-    print(f"   Completeness Score: {analysis['completeness_score']}%")
-    print(f"   Missing Sections: {len(analysis['missing_required'])}")
+    logger.info(f"   Completeness Score: {analysis['completeness_score']}%")
+    logger.info(f"   Missing Sections: {len(analysis['missing_required'])}")
     
-    print("\n2. Testing Q&A...")
+    logger.info("\n2. Testing Q&A...")
     question = "What are the key requirements for LDT validation?"
     response = ask_compliance_question(question)
-    print(f"   Answer: {response['answer'][:100]}...")
+    logger.info(f"   Answer: {response['answer'][:100]}...")
     
-    print("\n✅ Agent test completed")
+    logger.info("\n✅ Agent test completed")
 
 if __name__ == "__main__":
     test_agent()

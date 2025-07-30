@@ -4,11 +4,11 @@ LDT Compliance Copilot - Streamlit Application
 import streamlit as st
 import tempfile
 import os
-import pdfkit
 from io import BytesIO
 from dotenv import load_dotenv
-from agent.run import generate_gap_report, ask_compliance_question
+from agent.run import generate_gap_report, ask_compliance_question, analyze_completeness, extract_text_from_file
 from agent.knowledge_base import knowledge_base
+from utils.pdf_generator import generate_compliance_pdf
 
 # Load environment variables
 load_dotenv()
@@ -467,12 +467,12 @@ def main():
                     <span>FDA Guidance Updated</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <div style="width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></div>
-                    <span>CLIA Compliant</span>
+                    <div style="width: 8px; height: 8px; background: {'#10b981' if os.getenv('NVIDIA_API_KEY') else '#ef4444'}; border-radius: 50%;"></div>
+                    <span>NVIDIA API {'Connected' if os.getenv('NVIDIA_API_KEY') else 'Not Connected'}</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <div style="width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></div>
-                    <span>SOC 2 Certified</span>
+                    <span>Knowledge Base Ready</span>
                 </div>
             </div>
         </div>
@@ -558,12 +558,23 @@ def main():
                             st.error("File appears to be empty. Please upload a valid document.")
                             return
                             
+                        # Generate report and extract analysis data
                         report_md = generate_gap_report(file_content, uploaded_file.name)
+                        
+                        # Also store the raw analysis data for accurate score display
+                        text = extract_text_from_file(file_content, uploaded_file.name)
+                        analysis = analyze_completeness(text)
+                        
                         st.session_state.analysis_complete = True
                         st.session_state.report_md = report_md
+                        st.session_state.analysis_data = analysis  # Store raw analysis
                         st.rerun()
                     except Exception as e:
-                        st.error(f"Error analyzing file: {e}")
+                        if "NVIDIA API call failed" in str(e):
+                            st.error("🔑 NVIDIA API Error: Please set your NVIDIA_API_KEY environment variable to use AI-powered analysis.")
+                            st.info("💡 Get your API key from: https://build.nvidia.com/nvidia/nemotron-4-340b-instruct")
+                        else:
+                            st.error(f"Error analyzing file: {e}")
                         print(f"Full error: {e}")  # Debug print
             else:
                 st.error("Please upload a file first.")
@@ -606,34 +617,168 @@ def main():
             st.markdown('<div class="results-section">', unsafe_allow_html=True)
             st.markdown('### 📊 Compliance Analysis')
             
-            # Mock compliance score and items (replace with actual analysis)
-            compliance_score = 67
+            # Extract actual compliance score from stored analysis data
+            try:
+                if hasattr(st.session_state, 'analysis_data'):
+                    compliance_score = st.session_state.analysis_data['completeness_score']
+                else:
+                    # Fallback: try to parse from markdown
+                    import re
+                    score_match = re.search(r'Completeness Score.*?(\d+(?:\.\d+)?)%', st.session_state.report_md)
+                    if score_match:
+                        compliance_score = float(score_match.group(1))
+                    else:
+                        compliance_score = 0  # Default to 0 if nothing found
+            except:
+                compliance_score = 0  # Default to 0 if error
             
-            # Compliance score display
+            # Compliance score display - single column to prevent layout issues
+            st.markdown('### 📊 Compliance Analysis Results')
             col_score, col_downloads = st.columns([1, 1])
             with col_score:
+                # Determine status text and color
+                if compliance_score < 40:
+                    status_text = "Critical - Immediate action required"
+                    status_color = "#ef4444"
+                    circle_color = "#ef4444"
+                elif compliance_score < 70:
+                    status_text = "Moderate - Significant gaps identified"
+                    status_color = "#f59e0b"
+                    circle_color = "#f59e0b"
+                elif compliance_score < 90:
+                    status_text = "Good - Minor improvements needed"
+                    status_color = "#10b981"
+                    circle_color = "#10b981"
+                else:
+                    status_text = "Excellent - Ready for submission"
+                    status_color = "#10b981"
+                    circle_color = "#10b981"
+                
+                # Create separate score and status sections to prevent overlap
                 st.markdown(f'''
-                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
-                    <div style="position: relative; width: 96px; height: 96px;">
-                        <svg width="96" height="96" style="transform: rotate(-90deg);">
-                            <circle cx="48" cy="48" r="40" stroke="#e5e7eb" stroke-width="8" fill="none"/>
-                            <circle cx="48" cy="48" r="40" stroke="#10b981" stroke-width="8" fill="none" 
-                                    stroke-dasharray="{compliance_score * 2.51} 251" stroke-linecap="round"/>
-                        </svg>
-                        <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;">
-                            <span style="font-size: 1.5rem; font-weight: 700; color: #1e3a8a;">{compliance_score}%</span>
+                <div style="text-align: center; margin-bottom: 24px;">
+                    <h3 style="font-size: 1.5rem; font-weight: 600; color: #1e3a8a; margin-bottom: 20px;">Overall Compliance Score</h3>
+                    
+                    <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+                        <div style="position: relative; width: 140px; height: 140px;">
+                            <svg width="140" height="140" style="transform: rotate(-90deg);">
+                                <circle cx="70" cy="70" r="60" stroke="#e5e7eb" stroke-width="12" fill="none"/>
+                                <circle cx="70" cy="70" r="60" stroke="{circle_color}" stroke-width="12" fill="none" 
+                                        stroke-dasharray="{compliance_score * 3.77} 377" stroke-linecap="round"/>
+                            </svg>
+                            <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;">
+                                <span style="font-size: 2.2rem; font-weight: 700; color: {status_color};">{compliance_score:.0f}%</span>
+                            </div>
                         </div>
                     </div>
-                    <div>
-                        <h3 style="font-size: 1.25rem; font-weight: 600; color: #1e3a8a; margin-bottom: 4px;">Compliance Score</h3>
-                        <p style="color: #1d4ed8;">Moderate compliance level</p>
+                    
+                    <div style="background: {status_color}; color: white; padding: 12px 24px; border-radius: 25px; display: inline-block; font-weight: 500; margin-top: 10px;">
+                        {status_text}
                     </div>
                 </div>
                 ''', unsafe_allow_html=True)
             
             with col_downloads:
                 if st.button("📑 Download PDF Report", key="download_pdf"):
-                    st.info("PDF generation requires wkhtmltopdf installation")
+                    if hasattr(st.session_state, 'report_md') and st.session_state.uploaded_file:
+                        try:
+                            # Use stored analysis data for PDF generation
+                            # Use stored analysis data
+                            if hasattr(st.session_state, 'analysis_data'):
+                                analysis = st.session_state.analysis_data
+                            else:
+                                # Fallback: re-analyze
+                                uploaded_file = st.session_state.uploaded_file
+                                uploaded_file.seek(0)
+                                file_content = uploaded_file.read()
+                                text = extract_text_from_file(file_content, uploaded_file.name)
+                                analysis = analyze_completeness(text)
+                            
+                            # Generate clean content for PDF
+                            score = analysis['completeness_score']
+                            missing_count = len(analysis['missing_required'])
+                            present_count = len(analysis['present_sections'])
+                            
+                            # Generate clean executive summary
+                            status = 'EXCELLENT' if score >= 90 else 'GOOD' if score >= 70 else 'MODERATE' if score >= 40 else 'CRITICAL'
+                            risk = 'Low Risk' if score >= 90 else 'Moderate Risk' if score >= 70 else 'High Risk' if score >= 40 else 'Very High Risk'
+                            
+                            executive_summary_text = f"""
+**COMPLIANCE STATUS:** {status} (Score: {score}%)
+
+**KEY FINDINGS:**
+• {present_count} of {present_count + missing_count} required sections identified and compliant
+• {missing_count} critical regulatory sections require immediate attention  
+• Overall regulatory risk assessment: {risk}
+
+**REGULATORY IMPACT:**
+• Submission completeness: {score:.1f}% of FDA/CLIA requirements met
+• Missing sections may result in regulatory delays or rejection
+• Compliance gaps pose {risk.lower()} to approval timeline
+
+**IMMEDIATE ACTIONS REQUIRED:**
+• Address all {missing_count} missing required sections
+• Ensure compliance with 21 CFR 809, 21 CFR 820, and CLIA requirements
+• Conduct comprehensive regulatory review before resubmission
+"""
+                            
+                            # Generate clean AI analysis
+                            missing_sections_list = list(analysis['missing_required'].keys())
+                            ai_analysis_text = f"""
+**REGULATORY COMPLIANCE GUIDANCE**
+
+**Missing Critical Sections Analysis:**
+
+The following {missing_count} sections are mandatory for FDA/CLIA compliance:
+
+"""
+                            for i, (section, description) in enumerate(analysis['missing_required'].items(), 1):
+                                ai_analysis_text += f"""
+**{i}. {section}**
+• **Regulatory Requirement:** {description}
+• **Regulatory Basis:** FDA 21 CFR Parts 809 & 820, CLIA Final Rule
+• **Priority:** HIGH - Mandatory for submission
+• **Compliance Risk:** Submission will be incomplete without this section
+• **Action Required:** Must be addressed before resubmission
+
+"""
+                            ai_analysis_text += f"""
+**REGULATORY FRAMEWORK:**
+• FDA 21 CFR Part 809 (In Vitro Diagnostic Products)
+• FDA 21 CFR Part 820 (Quality System Regulation)  
+• CLIA Final Rule (Clinical Laboratory Standards)
+• Current FDA LDT guidance documents
+
+**IMPLEMENTATION GUIDANCE:**
+1. Review each missing section against applicable CFR requirements
+2. Develop comprehensive documentation for each section
+3. Ensure consistency across all regulatory submissions
+4. Conduct internal quality review before resubmission
+"""
+                            
+                            # Prepare data for PDF
+                            pdf_data = {
+                                'filename': uploaded_file.name if hasattr(st.session_state, 'uploaded_file') else 'Unknown',
+                                'score': analysis['completeness_score'],
+                                'missing_sections': analysis['missing_required'],
+                                'present_sections': analysis['present_sections'],
+                                'executive_summary': executive_summary_text,
+                                'ai_analysis': ai_analysis_text
+                            }
+                            
+                            # Generate PDF
+                            pdf_buffer = generate_compliance_pdf(pdf_data)
+                            
+                            st.download_button(
+                                label="📑 Download PDF Report",
+                                data=pdf_buffer.getvalue(),
+                                file_name=f"LDT_Compliance_Report_{uploaded_file.name.split('.')[0]}.pdf",
+                                mime="application/pdf"
+                            )
+                        except Exception as e:
+                            st.error(f"Error generating PDF: {e}")
+                    else:
+                        st.warning("Please generate a report first")
                 if st.button("📄 Download Markdown", key="download_md"):
                     if hasattr(st.session_state, 'report_md'):
                         st.download_button(
@@ -708,7 +853,11 @@ def main():
                     st.session_state.chat_messages.extend([user_msg, assistant_msg])
                     st.rerun()
                 except Exception as e:
-                    st.error(f"Error processing question: {e}")
+                    if "NVIDIA API call failed" in str(e):
+                        st.error("🔑 NVIDIA API Error: Please set your NVIDIA_API_KEY environment variable to use AI-powered Q&A.")
+                        st.info("💡 Get your API key from: https://build.nvidia.com/nvidia/nemotron-4-340b-instruct")
+                    else:
+                        st.error(f"Error processing question: {e}")
             else:
                 st.warning("Knowledge base not available. Please build the vector store first.")
         

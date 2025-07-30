@@ -2,83 +2,86 @@
 NVIDIA Nemotron 3.3 LLM wrapper for LDT compliance queries
 """
 import os
-import requests
+import logging
 from typing import Optional
 from dotenv import load_dotenv
+from openai import OpenAI
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 # Load environment variables from .env file
 load_dotenv()
 
-# NVIDIA API configuration - Try different endpoints
-API_ENDPOINT = "https://api.nvcf.nvidia.com/v2/nvcf/pexec/functions/d29f9e87-b724-484e-a01a-eca9dd63e9ca"
-HEADERS = {
-    "Authorization": f"Bearer {os.getenv('NVIDIA_API_KEY')}",
-    "Content-Type": "application/json"
-}
+# NVIDIA API configuration using OpenAI client
 
-def nemotron(prompt: str, max_tokens: int = 1024, temperature: float = 0.7) -> str:
+def nemotron(prompt: str, max_tokens: int = 1024, temperature: float = 0.6) -> str:
     """
-    Send prompt to NVIDIA Nemotron 3.3 and return response
+    Send prompt to NVIDIA Nemotron using OpenAI client
     
     Args:
         prompt: The input prompt for the model
         max_tokens: Maximum tokens to generate (default: 1024)
-        temperature: Sampling temperature (default: 0.7)
+        temperature: Sampling temperature (default: 0.6)
     
     Returns:
         Generated text response
     """
-    if not os.getenv('NVIDIA_API_KEY'):
+    logger.info("🚀 NVIDIA Nemotron API call initiated")
+    logger.info(f"📝 Prompt length: {len(prompt)} characters")
+    logger.info(f"⚙️ Parameters: max_tokens={max_tokens}, temperature={temperature}")
+    
+    api_key = os.getenv('NVIDIA_API_KEY')
+    if not api_key:
+        logger.error("❌ NVIDIA_API_KEY environment variable not set")
         raise ValueError(
             "NVIDIA_API_KEY environment variable not set. "
             "Please set your NVIDIA API key to use Nemotron."
         )
     
-    payload = {
-        "messages": [
-            {
-                "role": "user", 
-                "content": prompt
-            }
-        ],
-        "temperature": temperature,
-        "top_p": 0.9,
-        "max_tokens": max_tokens,
-        "stream": False
-    }
-    
     try:
-        response = requests.post(
-            API_ENDPOINT,
-            json=payload,
-            headers=HEADERS,
-            timeout=30
+        # Initialize OpenAI client with NVIDIA base URL
+        client = OpenAI(
+            base_url="https://integrate.api.nvidia.com/v1",
+            api_key=api_key
         )
-        response.raise_for_status()
         
-        result = response.json()
+        logger.info("🌐 Making API request to NVIDIA endpoint")
         
-        # Extract the generated text from the response
-        if "choices" in result and len(result["choices"]) > 0:
-            return result["choices"][0].get("message", {}).get("content", "")
-        else:
-            return f"Unexpected response format: {result}"
-            
-    except requests.exceptions.RequestException as e:
-        print(f"API Request Error: {e}")
-        if hasattr(e, 'response') and e.response is not None:
-            print(f"Response status: {e.response.status_code}")
-            print(f"Response content: {e.response.text}")
-        return nemotron_fallback(prompt)
+        # Make the API call
+        completion = client.chat.completions.create(
+            model="nvidia/llama-3.3-nemotron-super-49b-v1.5",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=temperature,
+            top_p=0.95,
+            max_tokens=max_tokens,
+            frequency_penalty=0,
+            presence_penalty=0,
+            stream=False
+        )
+        
+        logger.info("✅ NVIDIA API call successful")
+        
+        # Extract the generated content
+        generated_content = completion.choices[0].message.content
+        logger.info(f"📄 Generated response length: {len(generated_content)} characters")
+        logger.info("🎯 Using NVIDIA Nemotron model response")
+        
+        return generated_content
+        
     except Exception as e:
-        print(f"Unexpected error: {e}")
-        return nemotron_fallback(prompt)
+        logger.error(f"❌ NVIDIA API call failed: {e}")
+        logger.error("💥 API call failed - no fallback available")
+        raise Exception(f"NVIDIA API call failed: {e}")
 
 def nemotron_fallback(prompt: str) -> str:
     """
     Fallback function when NVIDIA API is not available
     Returns contextual responses based on the prompt for demonstration purposes
     """
+    logger.info("🔄 Using fallback response generation (NVIDIA API not available)")
+    logger.info(f"📝 Fallback prompt length: {len(prompt)} characters")
     lower_prompt = prompt.lower()
     
     if "missing sections" in lower_prompt or "gap" in lower_prompt:
@@ -177,14 +180,17 @@ def test_nemotron():
     """Test the Nemotron connection"""
     test_prompt = "What are the key requirements for LDT validation under FDA regulations?"
     
+    logger.info("🧪 Starting Nemotron API test...")
     if os.getenv('NVIDIA_API_KEY'):
-        print("Testing Nemotron API connection...")
-        response = nemotron(test_prompt)
-        print(f"✅ Response received: {response[:100]}...")
+        logger.info("🔑 NVIDIA_API_KEY found, testing API connection...")
+        try:
+            response = nemotron(test_prompt)
+            logger.info(f"✅ Response received: {response[:100]}...")
+        except Exception as e:
+            logger.error(f"❌ API test failed: {e}")
     else:
-        print("⚠️  NVIDIA_API_KEY not set, using fallback")
-        response = nemotron_fallback(test_prompt)
-        print(f"✅ Fallback response: {response[:100]}...")
+        logger.error("❌ NVIDIA_API_KEY not set - API calls will fail")
+        logger.error("💡 Please set NVIDIA_API_KEY environment variable")
 
 if __name__ == "__main__":
     test_nemotron()
