@@ -2,6 +2,8 @@
 
 import { useState } from "react"
 import dynamic from "next/dynamic"
+import { Mail, MessageSquare } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 // Dynamically import components that are designed as client components
 const AppHeader = dynamic(() => import("@/components/compliance/app-header"))
@@ -29,6 +31,37 @@ export default function HomePage() {
     console.log("Question clicked:", question)
   }
 
+  const handleContactUs = () => {
+    const founders = [
+      "sidv@berkeley.edu",
+      "akshajmolukutla@berkeley.edu"
+    ]
+    
+    const subject = "LDT Compliance Platform - Inquiry"
+    const message = `Dear Sid and Akshaj,
+
+I'm interested in learning more about your LDT Compliance Platform.
+
+Could you please provide more information about:
+- Pricing and plans
+- Integration options  
+- Custom features
+- Demo availability
+- Technical support
+
+Thank you!
+
+Best regards,
+[Your Name]
+[Your Organization]`
+
+    // Create mailto link with both founders
+    const mailtoLink = `mailto:${founders.join(',')}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`
+    
+    // Open default email client
+    window.open(mailtoLink, '_blank')
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
       <AppHeader />
@@ -45,9 +78,23 @@ export default function HomePage() {
             in Minutes, Not Months
           </h1>
           
-          <p className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed mb-8">
             Upload your LDT submission and get instant FDA & CLIA compliance analysis with AI-powered gap identification and remediation guidance
           </p>
+
+          {/* Contact Button */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Button
+              onClick={handleContactUs}
+              className="bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-600 hover:to-emerald-600 text-white px-8 py-3 text-lg font-semibold shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all duration-300"
+            >
+              <Mail className="h-5 w-5 mr-2" />
+              Contact Our Founders
+            </Button>
+            <p className="text-sm text-slate-400">
+              Get in touch with Sid & Akshaj directly
+            </p>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">

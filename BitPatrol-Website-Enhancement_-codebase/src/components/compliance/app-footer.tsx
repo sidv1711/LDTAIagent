@@ -5,7 +5,8 @@ import { ShieldCheck, MessageCircle, LifeBuoy, FileText } from "lucide-react"
 
 interface FooterLink {
   label: string
-  href: string
+  href?: string
+  onClick?: () => void
 }
 
 interface FooterSection {
@@ -13,42 +14,73 @@ interface FooterSection {
   links: FooterLink[]
 }
 
-const footerSections: FooterSection[] = [
-  {
-    title: "Product",
-    links: [
-      { label: "Compliance Analysis", href: "/compliance-analysis" },
-      { label: "Gap Reports", href: "/gap-reports" },
-      { label: "Regulatory Q&A", href: "/regulatory-qa" },
-    ],
-  },
-  {
-    title: "Resources",
-    links: [
-      { label: "FDA Guidance", href: "/fda-guidance" },
-      { label: "CUA Requirements", href: "/cua-requirements" },
-      { label: "Documentation", href: "/documentation" },
-    ],
-  },
-  {
-    title: "Support",
-    links: [
-      { label: "Help Center", href: "/help-center" },
-      { label: "Contact Us", href: "/contact" },
-      { label: "API Status", href: "/api-status" },
-    ],
-  },
-  {
-    title: "Legal",
-    links: [
-      { label: "Privacy Policy", href: "/privacy-policy" },
-      { label: "Terms of Service", href: "/terms-of-service" },
-      { label: "Security", href: "/security" },
-    ],
-  },
-]
-
 export default function AppFooter() {
+  const handleContactUs = () => {
+    const founders = [
+      "sidv@berkeley.edu",
+      "akshajmolukutla@berkeley.edu"
+    ]
+    
+    const subject = "LDT Compliance Platform - Inquiry"
+    const message = `Dear Sid and Akshaj,
+
+I'm interested in learning more about your LDT Compliance Platform.
+
+Could you please provide more information about:
+- Pricing and plans
+- Integration options  
+- Custom features
+- Demo availability
+- Technical support
+
+Thank you!
+
+Best regards,
+[Your Name]
+[Your Organization]`
+
+    // Create mailto link with both founders
+    const mailtoLink = `mailto:${founders.join(',')}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`
+    
+    // Open default email client
+    window.open(mailtoLink, '_blank')
+  }
+
+  const footerSections: FooterSection[] = [
+    {
+      title: "Product",
+      links: [
+        { label: "Compliance Analysis", href: "/compliance-analysis" },
+        { label: "Gap Reports", href: "/gap-reports" },
+        { label: "Regulatory Q&A", href: "/regulatory-qa" },
+      ],
+    },
+    {
+      title: "Resources",
+      links: [
+        { label: "FDA Guidance", href: "/fda-guidance" },
+        { label: "CUA Requirements", href: "/cua-requirements" },
+        { label: "Documentation", href: "/documentation" },
+      ],
+    },
+    {
+      title: "Support",
+      links: [
+        { label: "Help Center", href: "/help-center" },
+        { label: "Contact Us", onClick: handleContactUs },
+        { label: "API Status", href: "/api-status" },
+      ],
+    },
+    {
+      title: "Legal",
+      links: [
+        { label: "Privacy Policy", href: "/privacy-policy" },
+        { label: "Terms of Service", href: "/terms-of-service" },
+        { label: "Security", href: "/security" },
+      ],
+    },
+  ]
+
   return (
     <footer className="bg-[#f8fafc] dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
       <div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
@@ -61,12 +93,21 @@ export default function AppFooter() {
               <ul className="space-y-3">
                 {section.links.map((link) => (
                   <li key={link.label}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 transition-colors duration-200"
-                    >
-                      {link.label}
-                    </Link>
+                    {link.onClick ? (
+                      <button
+                        onClick={link.onClick}
+                        className="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 transition-colors duration-200 cursor-pointer"
+                      >
+                        {link.label}
+                      </button>
+                    ) : (
+                      <Link
+                        href={link.href || "#"}
+                        className="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 transition-colors duration-200"
+                      >
+                        {link.label}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -99,6 +140,9 @@ export default function AppFooter() {
           <div className="mt-8 text-center">
             <p className="text-sm text-slate-500 dark:text-slate-400">
               &copy; {new Date().getFullYear()} Compliance Platform. All rights reserved.
+            </p>
+            <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">
+              Founded by Sid V & Akshaj Molukutla at UC Berkeley
             </p>
           </div>
         </div>
