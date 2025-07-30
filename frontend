@@ -1,4 +1,4 @@
-use client"
+"use client"
 
 import type React from "react"
 
@@ -15,646 +15,645 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { ChevronDown, ChevronRight } from "lucide-react"
 
 interface ComplianceItem {
-  id: string
-  title: string
-  status: "present" | "missing" | "partial"
-  priority: "high" | "medium" | "low"
-  description: string
-  requirements: string[]
+ id: string
+ title: string
+ status: "present" | "missing" | "partial"
+ priority: "high" | "medium" | "low"
+ description: string
+ requirements: string[]
 }
 
 interface ChatMessage {
-  id: string
-  type: "user" | "assistant"
-  content: string
-  timestamp: Date
-  sources?: string[]
+ id: string
+ type: "user" | "assistant"
+ content: string
+ timestamp: Date
+ sources?: string[]
 }
 
 export default function LDTComplianceCopilot() {
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null)
-  const [isAnalyzing, setIsAnalyzing] = useState(false)
-  const [analysisComplete, setAnalysisComplete] = useState(false)
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
-  const [chatInput, setChatInput] = useState("")
-  const [expandedSections, setExpandedSections] = useState<string[]>([])
+ const [uploadedFile, setUploadedFile] = useState<File | null>(null)
+ const [isAnalyzing, setIsAnalyzing] = useState(false)
+ const [analysisComplete, setAnalysisComplete] = useState(false)
+ const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
+ const [chatInput, setChatInput] = useState("")
+ const [expandedSections, setExpandedSections] = useState<string[]>([])
 
-  // Sample compliance data
-  const complianceScore = 67
-  const complianceItems: ComplianceItem[] = [
-    {
-      id: "1",
-      title: "Intended Use Statement",
-      status: "missing",
-      priority: "high",
-      description: "Clear statement of the intended use of the LDT",
-      requirements: [
-        "Define target population",
-        "Specify clinical condition or disease",
-        "Describe intended clinical decision-making",
-      ],
-    },
-    {
-      id: "2",
-      title: "Risk Assessment",
-      status: "missing",
-      priority: "high",
-      description: "Comprehensive risk analysis and mitigation strategies",
-      requirements: [
-        "Identify potential risks to patient safety",
-        "Document risk mitigation measures",
-        "Establish risk monitoring procedures",
-      ],
-    },
-    {
-      id: "3",
-      title: "Quality System Documentation",
-      status: "missing",
-      priority: "medium",
-      description: "Quality management system documentation",
-      requirements: ["Document control procedures", "Personnel qualifications", "Equipment maintenance records"],
-    },
-    {
-      id: "4",
-      title: "Analytical Validity",
-      status: "present",
-      priority: "low",
-      description: "Evidence of analytical performance characteristics",
-      requirements: ["Accuracy studies completed", "Precision data documented", "Reference range established"],
-    },
-    {
-      id: "5",
-      title: "Clinical Validity",
-      status: "present",
-      priority: "low",
-      description: "Evidence of clinical performance and utility",
-      requirements: [
-        "Clinical sensitivity documented",
-        "Clinical specificity established",
-        "Positive/negative predictive values calculated",
-      ],
-    },
-  ]
+ // Sample compliance data
+ const complianceScore = 67
+ const complianceItems: ComplianceItem[] = [
+ {
+ id: "1",
+ title: "Intended Use Statement",
+ status: "missing",
+ priority: "high",
+ description: "Clear statement of the intended use of the LDT",
+ requirements: [
+ "Define target population",
+ "Specify clinical condition or disease",
+ "Describe intended clinical decision-making",
+ ],
+ },
+ {
+ id: "2",
+ title: "Risk Assessment",
+ status: "missing",
+ priority: "high",
+ description: "Comprehensive risk analysis and mitigation strategies",
+ requirements: [
+ "Identify potential risks to patient safety",
+ "Document risk mitigation measures",
+ "Establish risk monitoring procedures",
+ ],
+ },
+ {
+ id: "3",
+ title: "Quality System Documentation",
+ status: "missing",
+ priority: "medium",
+ description: "Quality management system documentation",
+ requirements: ["Document control procedures", "Personnel qualifications", "Equipment maintenance records"],
+ },
+ {
+ id: "4",
+ title: "Analytical Validity",
+ status: "present",
+ priority: "low",
+ description: "Evidence of analytical performance characteristics",
+ requirements: ["Accuracy studies completed", "Precision data documented", "Reference range established"],
+ },
+ {
+ id: "5",
+ title: "Clinical Validity",
+ status: "present",
+ priority: "low",
+ description: "Evidence of clinical performance and utility",
+ requirements: [
+ "Clinical sensitivity documented",
+ "Clinical specificity established",
+ "Positive/negative predictive values calculated",
+ ],
+ },
+ ]
 
-  const sampleQuestions = [
-    "What are key LDT analytical validation requirements?",
-    "How do I demonstrate clinical validity?",
-    "What quality system documentation is needed?",
-    "What is the FDA and what do they regulate?",
-    "Who is Elizabeth Holmes and why is LDT compliance important?",
-    "What happened with Theranos and LDT oversight?",
-    "What are Laboratory Developed Tests (LDTs)?",
-    "What's the difference between FDA and CLIA regulations?",
-  ]
+ const sampleQuestions = [
+ "What are key LDT analytical validation requirements?",
+ "How do I demonstrate clinical validity?",
+ "What quality system documentation is needed?",
+ "What is the FDA and what do they regulate?",
+ "Who is Elizabeth Holmes and why is LDT compliance important?",
+ "What happened with Theranos and LDT oversight?",
+ "What are Laboratory Developed Tests (LDTs)?",
+ "What's the difference between FDA and CLIA regulations?",
+ ]
 
-  const handleFileUpload = (file: File) => {
-    setUploadedFile(file)
-    setAnalysisComplete(false)
-  }
+ const handleFileUpload = (file: File) => {
+ setUploadedFile(file)
+ setAnalysisComplete(false)
+ }
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault()
-  }
+ const handleDragOver = (e: React.DragEvent) => {
+ e.preventDefault()
+ }
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault()
-    const files = e.dataTransfer.files
-    if (files.length > 0) {
-      handleFileUpload(files[0])
-    }
-  }
+ const handleDrop = (e: React.DragEvent) => {
+ e.preventDefault()
+ const files = e.dataTransfer.files
+ if (files.length > 0) {
+ handleFileUpload(files[0])
+ }
+ }
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-    if (files && files.length > 0) {
-      handleFileUpload(files[0])
-    }
-  }
+ const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+ const files = e.target.files
+ if (files && files.length > 0) {
+ handleFileUpload(files[0])
+ }
+ }
 
-  const generateGapReport = async () => {
-    if (!uploadedFile) return
+ const generateGapReport = async () => {
+ if (!uploadedFile) return
 
-    setIsAnalyzing(true)
-    // Simulate analysis
-    await new Promise((resolve) => setTimeout(resolve, 3000))
-    setIsAnalyzing(false)
-    setAnalysisComplete(true)
-  }
+ setIsAnalyzing(true)
+ // Simulate analysis
+ await new Promise((resolve) => setTimeout(resolve, 3000))
+ setIsAnalyzing(false)
+ setAnalysisComplete(true)
+ }
 
-  const handleChatSubmit = (question?: string) => {
-    const message = question || chatInput
-    if (!message.trim()) return
+ const handleChatSubmit = (question?: string) => {
+ const message = question || chatInput
+ if (!message.trim()) return
 
-    const userMessage: ChatMessage = {
-      id: Date.now().toString(),
-      type: "user",
-      content: message,
-      timestamp: new Date(),
-    }
+ const userMessage: ChatMessage = {
+ id: Date.now().toString(),
+ type: "user",
+ content: message,
+ timestamp: new Date(),
+ }
 
-    // Generate contextual responses based on question type
-    let assistantContent = ""
-    let sources: string[] = []
+ // Generate contextual responses based on question type
+ let assistantContent = ""
+ let sources: string[] = []
 
-    const lowerMessage = message.toLowerCase()
+ const lowerMessage = message.toLowerCase()
 
-    if (lowerMessage.includes("elizabeth holmes") || lowerMessage.includes("theranos")) {
-      assistantContent =
-        "Elizabeth Holmes was the founder and CEO of Theranos, a company that claimed to revolutionize blood testing with proprietary technology. The company collapsed in 2018 amid fraud charges when it was revealed that their tests were unreliable and potentially dangerous. This scandal highlighted critical gaps in LDT oversight and accelerated FDA efforts to regulate laboratory-developed tests more strictly. Holmes was convicted of fraud in 2022, making her case a cautionary tale about the importance of rigorous validation and regulatory compliance in diagnostic testing."
-      sources = ["SEC vs. Theranos", "FDA Safety Communications", "DOJ Criminal Case"]
-    } else if (lowerMessage.includes("what is the fda") || lowerMessage.includes("fda regulate")) {
-      assistantContent =
-        "The FDA (Food and Drug Administration) is a federal agency within the U.S. Department of Health and Human Services responsible for protecting public health by regulating and supervising the safety of drugs, medical devices, food, and other consumer products. For laboratory testing, the FDA regulates in vitro diagnostic devices (IVDs) and is working to extend oversight to Laboratory Developed Tests (LDTs). The FDA ensures that diagnostic tests are safe, effective, and provide accurate results before they reach patients."
-      sources = ["FDA.gov", "Federal Food, Drug, and Cosmetic Act", "21 CFR Parts 809, 820"]
-    } else if (lowerMessage.includes("laboratory developed test") || lowerMessage.includes("what are ldts")) {
-      assistantContent =
-        "Laboratory Developed Tests (LDTs) are diagnostic tests that are developed, manufactured, and used within a single laboratory. Unlike commercial test kits, LDTs are typically created by hospital labs or reference laboratories to meet specific clinical needs. Historically, LDTs have been regulated primarily under CLIA (Clinical Laboratory Improvement Amendments), but the FDA is now proposing increased oversight due to their growing complexity and clinical impact. LDTs can range from simple tests to sophisticated molecular diagnostics and genetic tests."
-      sources = ["FDA LDT Guidance", "CLIA Regulations", "Clinical Laboratory News"]
-    } else if (lowerMessage.includes("theranos") && lowerMessage.includes("oversight")) {
-      assistantContent =
-        "The Theranos scandal exposed significant regulatory gaps in LDT oversight. Theranos operated under CLIA regulations but avoided FDA scrutiny by claiming their tests were LDTs. The company's fraudulent practices—including using traditional machines for most tests while claiming proprietary technology—went undetected for years. This case demonstrated the need for stronger FDA oversight of LDTs, especially those with high clinical impact. It led to increased regulatory scrutiny and proposed rules requiring LDTs to meet the same standards as other diagnostic devices."
-      sources = ["FDA LDT Final Rule", "Theranos SEC Filings", "Bad Blood by John Carreyrou"]
-    } else if (lowerMessage.includes("clia") && lowerMessage.includes("fda")) {
-      assistantContent =
-        "CLIA (Clinical Laboratory Improvement Amendments) and FDA serve different but complementary roles in laboratory regulation. CLIA, administered by CMS, focuses on laboratory quality standards, personnel qualifications, and proficiency testing—essentially ensuring labs can perform tests competently. The FDA focuses on the safety and effectiveness of the tests themselves—ensuring the diagnostic devices work as intended. For LDTs, labs must comply with both CLIA requirements for laboratory operations AND emerging FDA requirements for test validation and performance."
-      sources = ["CLIA Final Rule", "FDA Device Regulations", "CMS Guidelines"]
-    } else if (lowerMessage.includes("analytical validation") || lowerMessage.includes("analytical validity")) {
-      assistantContent =
-        "Analytical validation requires demonstrating that your LDT can accurately and reliably measure what it claims to measure. Key requirements include: accuracy studies comparing your test to a reference method or known samples, precision studies showing reproducibility within and between runs, analytical sensitivity (limit of detection), analytical specificity (ability to detect only the target analyte), reportable range validation, and reference interval studies. You must provide documented evidence for each parameter with appropriate statistical analysis."
-      sources = ["21 CFR 820", "CLIA Final Rule", "FDA LDT Guidance"]
-    } else if (lowerMessage.includes("clinical validity") || lowerMessage.includes("clinical validation")) {
-      assistantContent =
-        "Clinical validity requires evidence that your test accurately identifies, measures, or predicts the clinical condition of interest. This includes clinical sensitivity (ability to correctly identify positive cases), clinical specificity (ability to correctly identify negative cases), positive and negative predictive values, and clinical utility studies showing the test improves patient outcomes. You need data from well-designed clinical studies with appropriate patient populations and statistical power."
-      sources = ["FDA Clinical Trial Guidance", "21 CFR 820", "Clinical Validation Studies"]
-    } else if (lowerMessage.includes("quality system") || lowerMessage.includes("quality management")) {
-      assistantContent =
-        "Quality system documentation must include comprehensive procedures for document control, personnel qualifications and training records, equipment maintenance and calibration, reagent and supply management, proficiency testing participation, quality control procedures, corrective and preventive action (CAPA) systems, and complaint handling. This creates a framework ensuring consistent, reliable test performance and continuous improvement."
-      sources = ["21 CFR 820", "CLIA Final Rule", "ISO 15189"]
-    } else {
-      // Default regulatory response for other questions
-      assistantContent =
-        "I can help you with questions about LDT compliance, FDA regulations, CLIA requirements, analytical and clinical validation, quality systems, and background information about regulatory oversight in laboratory testing. Please feel free to ask about specific compliance requirements or general educational topics related to laboratory diagnostics."
-      sources = ["FDA Guidance Documents", "CLIA Regulations"]
-    }
+ if (lowerMessage.includes("elizabeth holmes") || lowerMessage.includes("theranos")) {
+ assistantContent =
+ "Elizabeth Holmes was the founder and CEO of Theranos, a company that claimed to revolutionize blood testing with proprietary technology. The company collapsed in 2018 amid fraud charges when it was revealed that their tests were unreliable and potentially dangerous. This scandal highlighted critical gaps in LDT oversight and accelerated FDA efforts to regulate laboratory-developed tests more strictly. Holmes was convicted of fraud in 2022, making her case a cautionary tale about the importance of rigorous validation and regulatory compliance in diagnostic testing."
+ sources = ["SEC vs. Theranos", "FDA Safety Communications", "DOJ Criminal Case"]
+ } else if (lowerMessage.includes("what is the fda") || lowerMessage.includes("fda regulate")) {
+ assistantContent =
+ "The FDA (Food and Drug Administration) is a federal agency within the U.S. Department of Health and Human Services responsible for protecting public health by regulating and supervising the safety of drugs, medical devices, food, and other consumer products. For laboratory testing, the FDA regulates in vitro diagnostic devices (IVDs) and is working to extend oversight to Laboratory Developed Tests (LDTs). The FDA ensures that diagnostic tests are safe, effective, and provide accurate results before they reach patients."
+ sources = ["FDA.gov", "Federal Food, Drug, and Cosmetic Act", "21 CFR Parts 809, 820"]
+ } else if (lowerMessage.includes("laboratory developed test") || lowerMessage.includes("what are ldts")) {
+ assistantContent =
+ "Laboratory Developed Tests (LDTs) are diagnostic tests that are developed, manufactured, and used within a single laboratory. Unlike commercial test kits, LDTs are typically created by hospital labs or reference laboratories to meet specific clinical needs. Historically, LDTs have been regulated primarily under CLIA (Clinical Laboratory Improvement Amendments), but the FDA is now proposing increased oversight due to their growing complexity and clinical impact. LDTs can range from simple tests to sophisticated molecular diagnostics and genetic tests."
+ sources = ["FDA LDT Guidance", "CLIA Regulations", "Clinical Laboratory News"]
+ } else if (lowerMessage.includes("theranos") && lowerMessage.includes("oversight")) {
+ assistantContent =
+ "The Theranos scandal exposed significant regulatory gaps in LDT oversight. Theranos operated under CLIA regulations but avoided FDA scrutiny by claiming their tests were LDTs. The company's fraudulent practices—including using traditional machines for most tests while claiming proprietary technology—went undetected for years. This case demonstrated the need for stronger FDA oversight of LDTs, especially those with high clinical impact. It led to increased regulatory scrutiny and proposed rules requiring LDTs to meet the same standards as other diagnostic devices."
+ sources = ["FDA LDT Final Rule", "Theranos SEC Filings", "Bad Blood by John Carreyrou"]
+ } else if (lowerMessage.includes("clia") && lowerMessage.includes("fda")) {
+ assistantContent =
+ "CLIA (Clinical Laboratory Improvement Amendments) and FDA serve different but complementary roles in laboratory regulation. CLIA, administered by CMS, focuses on laboratory quality standards, personnel qualifications, and proficiency testing—essentially ensuring labs can perform tests competently. The FDA focuses on the safety and effectiveness of the tests themselves—ensuring the diagnostic devices work as intended. For LDTs, labs must comply with both CLIA requirements for laboratory operations AND emerging FDA requirements for test validation and performance."
+ sources = ["CLIA Final Rule", "FDA Device Regulations", "CMS Guidelines"]
+ } else if (lowerMessage.includes("analytical validation") || lowerMessage.includes("analytical validity")) {
+ assistantContent =
+ "Analytical validation requires demonstrating that your LDT can accurately and reliably measure what it claims to measure. Key requirements include: accuracy studies comparing your test to a reference method or known samples, precision studies showing reproducibility within and between runs, analytical sensitivity (limit of detection), analytical specificity (ability to detect only the target analyte), reportable range validation, and reference interval studies. You must provide documented evidence for each parameter with appropriate statistical analysis."
+ sources = ["21 CFR 820", "CLIA Final Rule", "FDA LDT Guidance"]
+ } else if (lowerMessage.includes("clinical validity") || lowerMessage.includes("clinical validation")) {
+ assistantContent =
+ "Clinical validity requires evidence that your test accurately identifies, measures, or predicts the clinical condition of interest. This includes clinical sensitivity (ability to correctly identify positive cases), clinical specificity (ability to correctly identify negative cases), positive and negative predictive values, and clinical utility studies showing the test improves patient outcomes. You need data from well-designed clinical studies with appropriate patient populations and statistical power."
+ sources = ["FDA Clinical Trial Guidance", "21 CFR 820", "Clinical Validation Studies"]
+ } else if (lowerMessage.includes("quality system") || lowerMessage.includes("quality management")) {
+ assistantContent =
+ "Quality system documentation must include comprehensive procedures for document control, personnel qualifications and training records, equipment maintenance and calibration, reagent and supply management, proficiency testing participation, quality control procedures, corrective and preventive action (CAPA) systems, and complaint handling. This creates a framework ensuring consistent, reliable test performance and continuous improvement."
+ sources = ["21 CFR 820", "CLIA Final Rule", "ISO 15189"]
+ } else {
+ // Default regulatory response for other questions
+ assistantContent =
+ "I can help you with questions about LDT compliance, FDA regulations, CLIA requirements, analytical and clinical validation, quality systems, and background information about regulatory oversight in laboratory testing. Please feel free to ask about specific compliance requirements or general educational topics related to laboratory diagnostics."
+ sources = ["FDA Guidance Documents", "CLIA Regulations"]
+ }
 
-    const assistantMessage: ChatMessage = {
-      id: (Date.now() + 1).toString(),
-      type: "assistant",
-      content: assistantContent,
-      timestamp: new Date(),
-      sources: sources,
-    }
+ const assistantMessage: ChatMessage = {
+ id: (Date.now() + 1).toString(),
+ type: "assistant",
+ content: assistantContent,
+ timestamp: new Date(),
+ sources: sources,
+ }
 
-    setChatMessages((prev) => [...prev, userMessage, assistantMessage])
-    setChatInput("")
-  }
+ setChatMessages((prev) => [...prev, userMessage, assistantMessage])
+ setChatInput("")
+ }
 
-  const toggleSection = (sectionId: string) => {
-    setExpandedSections((prev) =>
-      prev.includes(sectionId) ? prev.filter((id) => id !== sectionId) : [...prev, sectionId],
-    )
-  }
+ const toggleSection = (sectionId: string) => {
+ setExpandedSections((prev) =>
+ prev.includes(sectionId) ? prev.filter((id) => id !== sectionId) : [...prev, sectionId],
+ )
+ }
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "present":
-        return <CheckCircle className="h-5 w-5 text-green-600" />
-      case "missing":
-        return <XCircle className="h-5 w-5 text-red-600" />
-      case "partial":
-        return <AlertTriangle className="h-5 w-5 text-orange-600" />
-      default:
-        return null
-    }
-  }
+ const getStatusIcon = (status: string) => {
+ switch (status) {
+ case "present":
+ return <CheckCircle className="h-5 w-5 text-green-600" />
+ case "missing":
+ return <XCircle className="h-5 w-5 text-red-600" />
+ case "partial":
+ return <AlertTriangle className="h-5 w-5 text-orange-600" />
+ default:
+ return null
+ }
+ }
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "high":
-        return "bg-red-100 text-red-800 border-red-200"
-      case "medium":
-        return "bg-orange-100 text-orange-800 border-orange-200"
-      case "low":
-        return "bg-green-100 text-green-800 border-green-200"
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200"
-    }
-  }
+ const getPriorityColor = (priority: string) => {
+ switch (priority) {
+ case "high":
+ return "bg-red-100 text-red-800 border-red-200"
+ case "medium":
+ return "bg-orange-100 text-orange-800 border-orange-200"
+ case "low":
+ return "bg-green-100 text-green-800 border-green-200"
+ default:
+ return "bg-gray-100 text-gray-800 border-gray-200"
+ }
+ }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Header */}
-      <div className="bg-blue-50 border-b border-blue-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
-          <div className="flex items-center justify-center gap-6 text-sm text-blue-700">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span>FDA Guidance Updated</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span>CLIA Compliant</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span>SOC 2 Certified</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <header className="bg-white shadow-sm border-b border-blue-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-blue-900 mb-2">🔬 LDT Compliance Copilot</h1>
-            <p className="text-lg text-blue-700 max-w-3xl mx-auto">
-              Upload your LDT draft submission—get instant FDA & CLIA compliance analysis in under 60 seconds
-            </p>
-          </div>
-        </div>
-      </header>
+ return (
+ <div className="min-h-screen bg-black">
+ {/* Header */}
+ <div className="bg-gray-900 border-b border-gray-700">
+ <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+ <div className="flex items-center justify-center gap-6 text-sm text-gray-300">
+ <div className="flex items-center gap-2">
+ <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+ <span>FDA Guidance Updated</span>
+ </div>
+ <div className="flex items-center gap-2">
+ <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+ <span>CLIA Compliant</span>
+ </div>
+ <div className="flex items-center gap-2">
+ <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+ <span>SOC 2 Certified</span>
+ </div>
+ </div>
+ </div>
+ </div>
+ <header className="bg-gray-900 shadow-sm border-b border-gray-700">
+ <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+ <div className="text-center">
+ <h1 className="text-4xl font-bold text-white mb-2">🔬 LDT Compliance Copilot</h1>
+ <p className="text-lg text-gray-300 max-w-3xl mx-auto">
+ Upload your LDT draft submission—get instant FDA & CLIA compliance analysis in under 60 seconds
+ </p>
+ </div>
+ </div>
+ </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - File Upload */}
-          <div className="lg:col-span-1">
-            <Card className="h-fit">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-blue-900">
-                  <Upload className="h-5 w-5" />
-                  Document Upload
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div
-                  className="border-2 border-dashed border-blue-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors cursor-pointer"
-                  onDragOver={handleDragOver}
-                  onDrop={handleDrop}
-                  onClick={() => document.getElementById("file-input")?.click()}
-                >
-                  <Upload className="h-12 w-12 text-blue-400 mx-auto mb-4" />
-                  <p className="text-lg font-medium text-blue-900 mb-2">Drop your LDT submission here</p>
-                  <p className="text-sm text-blue-600 mb-4">or click to browse files</p>
-                  <div className="flex flex-wrap justify-center gap-2">
-                    {["PDF", "DOCX", "JSON", "XML", "TXT"].map((type) => (
-                      <Badge key={type} variant="secondary" className="text-xs">
-                        {type}
-                      </Badge>
-                    ))}
-                  </div>
-                  <input
-                    id="file-input"
-                    type="file"
-                    className="hidden"
-                    accept=".pdf,.docx,.json,.xml,.txt"
-                    onChange={handleFileSelect}
-                  />
-                </div>
+ <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+ <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+ {/* Left Column - File Upload */}
+ <div className="lg:col-span-1">
+ <Card className="h-fit bg-gray-800 border-gray-700">
+ <CardHeader>
+ <CardTitle className="flex items-center gap-2 text-white">
+ <Upload className="h-5 w-5" />
+ Document Upload
+ </CardTitle>
+ </CardHeader>
+ <CardContent className="space-y-4">
+ <div
+ className="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center hover:border-gray-500 transition-colors cursor-pointer"
+ onDragOver={handleDragOver}
+ onDrop={handleDrop}
+ onClick={() => document.getElementById("file-input")?.click()}
+ >
+ <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+ <p className="text-lg font-medium text-white mb-2">Drop your LDT submission here</p>
+ <p className="text-sm text-gray-300 mb-4">or click to browse files</p>
+ <div className="flex flex-wrap justify-center gap-2">
+ {["PDF", "DOCX", "JSON", "XML", "TXT"].map((type) => (
+ <Badge key={type} variant="secondary" className="text-xs">
+ {type}
+ </Badge>
+ ))}
+ </div>
+ <input
+ id="file-input"
+ type="file"
+ className="hidden"
+ accept=".pdf,.docx,.json,.xml,.txt"
+ onChange={handleFileSelect}
+ />
+ </div>
 
-                {uploadedFile && (
-                  <div className="bg-blue-50 rounded-lg p-4">
-                    <div className="flex items-center gap-3">
-                      <FileText className="h-8 w-8 text-blue-600" />
-                      <div className="flex-1">
-                        <p className="font-medium text-blue-900">{uploadedFile.name}</p>
-                        <p className="text-sm text-blue-600">
-                          {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB • {uploadedFile.type || "Unknown type"}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
+ {uploadedFile && (
+ <div className="bg-gray-700 rounded-lg p-4">
+ <div className="flex items-center gap-3">
+ <FileText className="h-8 w-8 text-gray-400" />
+ <div className="flex-1">
+ <p className="font-medium text-white">{uploadedFile.name}</p>
+ <p className="text-sm text-gray-300">
+ {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB • {uploadedFile.type || "Unknown type"}
+ </p>
+ </div>
+ </div>
+ </div>
+ )}
 
-                <Button
-                  onClick={generateGapReport}
-                  disabled={!uploadedFile || isAnalyzing}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                  size="lg"
-                >
-                  {isAnalyzing ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2" />
-                      Analyzing...
-                    </>
-                  ) : (
-                    <>🔍 Generate Gap Report</>
-                  )}
-                </Button>
+ <Button
+ onClick={generateGapReport}
+ disabled={!uploadedFile || isAnalyzing}
+ className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+ size="lg"
+ >
+ {isAnalyzing ? (
+ <>
+ <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2" />
+ Analyzing...
+ </>
+ ) : (
+ <>🔍 Generate Gap Report</>
+ )}
+ </Button>
 
-                {isAnalyzing && (
-                  <div className="space-y-2">
-                    <Progress value={66} className="w-full" />
-                    <p className="text-xs text-blue-600 text-center">
-                      Analyzing against FDA & CLIA regulatory requirements...
-                    </p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+ {isAnalyzing && (
+ <div className="space-y-2">
+ <Progress value={66} className="w-full" />
+ <p className="text-xs text-gray-300 text-center">
+ Analyzing against FDA & CLIA regulatory requirements...
+ </p>
+ </div>
+ )}
+ </CardContent>
+ </Card>
 
-            {/* Sidebar Info */}
-            <Card className="mt-6">
-              <CardHeader>
-                <CardTitle className="text-sm text-blue-900">Knowledge Base Status</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-blue-700">FDA LDT Guidance</span>
-                  <Badge className="bg-green-100 text-green-800">Updated</Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-blue-700">CLIA Regulations</span>
-                  <Badge className="bg-green-100 text-green-800">Current</Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-blue-700">ISO 15189</span>
-                  <Badge className="bg-green-100 text-green-800">Active</Badge>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+ {/* Sidebar Info */}
+ <Card className="mt-6 bg-gray-800 border-gray-700">
+ <CardHeader>
+ <CardTitle className="text-sm text-white">Knowledge Base Status</CardTitle>
+ </CardHeader>
+ <CardContent className="space-y-3">
+ <div className="flex items-center justify-between">
+ <span className="text-sm text-gray-300">FDA LDT Guidance</span>
+ <Badge className="bg-green-100 text-green-800">Updated</Badge>
+ </div>
+ <div className="flex items-center justify-between">
+ <span className="text-sm text-gray-300">CLIA Regulations</span>
+ <Badge className="bg-green-100 text-green-800">Current</Badge>
+ </div>
+ <div className="flex items-center justify-between">
+ <span className="text-sm text-gray-300">ISO 15189</span>
+ <Badge className="bg-green-100 text-green-800">Active</Badge>
+ </div>
+ </CardContent>
+ </Card>
+ </div>
 
-          {/* Right Column - Results */}
-          <div className="lg:col-span-2 space-y-6">
-            {!analysisComplete && !isAnalyzing && (
-              <Card className="border-dashed border-2 border-gray-300">
-                <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                    <FileText className="h-8 w-8 text-blue-600" />
-                  </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Upload a document to get started</h3>
-                  <p className="text-gray-600 max-w-sm">
-                    Upload your LDT submission document to receive instant compliance analysis and gap identification.
-                  </p>
-                </CardContent>
-              </Card>
-            )}
-            {analysisComplete && (
-              <>
-                {/* Compliance Score */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-blue-900">Compliance Analysis</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center justify-between mb-6">
-                      <div className="flex items-center gap-4">
-                        <div className="relative w-24 h-24">
-                          <svg className="w-24 h-24 transform -rotate-90" viewBox="0 0 100 100">
-                            <circle cx="50" cy="50" r="40" stroke="#e5e7eb" strokeWidth="8" fill="none" />
-                            <circle
-                              cx="50"
-                              cy="50"
-                              r="40"
-                              stroke="#10b981"
-                              strokeWidth="8"
-                              fill="none"
-                              strokeDasharray={`${complianceScore * 2.51} 251`}
-                              strokeLinecap="round"
-                            />
-                          </svg>
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <span className="text-2xl font-bold text-blue-900">{complianceScore}%</span>
-                          </div>
-                        </div>
-                        <div>
-                          <h3 className="text-xl font-semibold text-blue-900">Compliance Score</h3>
-                          <p className="text-blue-600">Moderate compliance level</p>
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm">
-                          <Download className="h-4 w-4 mr-2" />
-                          PDF Report
-                        </Button>
-                        <Button variant="outline" size="sm">
-                          <Download className="h-4 w-4 mr-2" />
-                          Markdown
-                        </Button>
-                      </div>
-                    </div>
+ {/* Right Column - Results */}
+ <div className="lg:col-span-2 space-y-6">
+ {!analysisComplete && !isAnalyzing && (
+ <Card className="border-dashed border-2 border-gray-600 bg-gray-800">
+ <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+ <div className="w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center mb-4">
+ <FileText className="h-8 w-8 text-gray-400" />
+ </div>
+ <h3 className="text-lg font-medium text-white mb-2">Upload a document to get started</h3>
+ <p className="text-gray-400 max-w-sm">
+ Upload your LDT submission document to receive instant compliance analysis and gap identification.
+ </p>
+ </CardContent>
+ </Card>
+ )}
+ {analysisComplete && (
+ <>
+ {/* Compliance Score */}
+ <Card className="bg-gray-800 border-gray-700">
+ <CardHeader>
+ <CardTitle className="text-white">Compliance Analysis</CardTitle>
+ </CardHeader>
+ <CardContent>
+ <div className="flex items-center justify-between mb-6">
+ <div className="flex items-center gap-4">
+ <div className="relative w-24 h-24">
+ <svg className="w-24 h-24 transform -rotate-90" viewBox="0 0 100 100">
+ <circle cx="50" cy="50" r="40" stroke="#e5e7eb" strokeWidth="8" fill="none" />
+ <circle
+ cx="50"
+ cy="50"
+ r="40"
+ stroke="#10b981"
+ strokeWidth="8"
+ fill="none"
+ strokeDasharray={`${complianceScore * 2.51} 251`}
+ strokeLinecap="round"
+ />
+ </svg>
+ <div className="absolute inset-0 flex items-center justify-center">
+ <span className="text-2xl font-bold text-white">{complianceScore}%</span>
+ </div>
+ </div>
+ <div>
+ <h3 className="text-xl font-semibold text-white">Compliance Score</h3>
+ <p className="text-gray-400">Moderate compliance level</p>
+ </div>
+ </div>
+ <div className="flex gap-2">
+ <Button variant="outline" size="sm">
+ <Download className="h-4 w-4 mr-2" />
+ PDF Report
+ </Button>
+ <Button variant="outline" size="sm">
+ <Download className="h-4 w-4 mr-2" />
+ Markdown
+ </Button>
+ </div>
+ </div>
 
-                    {/* Compliance Items */}
-                    <div className="space-y-3">
-                      {complianceItems.map((item) => (
-                        <Collapsible key={item.id}>
-                          <div className="border rounded-lg p-4">
-                            <CollapsibleTrigger
-                              className="flex items-center justify-between w-full text-left"
-                              onClick={() => toggleSection(item.id)}
-                            >
-                              <div className="flex items-center gap-3">
-                                {getStatusIcon(item.status)}
-                                <div>
-                                  <h4 className="font-medium text-blue-900">{item.title}</h4>
-                                  <p className="text-sm text-blue-600">{item.description}</p>
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Badge className={getPriorityColor(item.priority)}>{item.priority.toUpperCase()}</Badge>
-                                {expandedSections.includes(item.id) ? (
-                                  <ChevronDown className="h-4 w-4" />
-                                ) : (
-                                  <ChevronRight className="h-4 w-4" />
-                                )}
-                              </div>
-                            </CollapsibleTrigger>
-                            <CollapsibleContent className="mt-3 pt-3 border-t">
-                              <div className="space-y-2">
-                                <h5 className="font-medium text-blue-900">Requirements:</h5>
-                                <ul className="space-y-1">
-                                  {item.requirements.map((req, index) => (
-                                    <li key={index} className="flex items-start gap-2 text-sm text-blue-700">
-                                      <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mt-2 flex-shrink-0" />
-                                      {req}
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                            </CollapsibleContent>
-                          </div>
-                        </Collapsible>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </>
-            )}
+ {/* Compliance Items */}
+ <div className="space-y-3">
+ {complianceItems.map((item) => (
+ <Collapsible key={item.id}>
+ <div className="border border-gray-600 rounded-lg p-4">
+ <CollapsibleTrigger
+ className="flex items-center justify-between w-full text-left"
+ onClick={() => toggleSection(item.id)}
+ >
+ <div className="flex items-center gap-3">
+ {getStatusIcon(item.status)}
+ <div>
+ <h4 className="font-medium text-white">{item.title}</h4>
+ <p className="text-sm text-gray-400">{item.description}</p>
+ </div>
+ </div>
+ <div className="flex items-center gap-2">
+ <Badge className={getPriorityColor(item.priority)}>{item.priority.toUpperCase()}</Badge>
+ {expandedSections.includes(item.id) ? (
+ <ChevronDown className="h-4 w-4" />
+ ) : (
+ <ChevronRight className="h-4 w-4" />
+ )}
+ </div>
+ </CollapsibleTrigger>
+ <CollapsibleContent className="mt-3 pt-3 border-t">
+ <div className="space-y-2">
+ <h5 className="font-medium text-white">Requirements:</h5>
+ <ul className="space-y-1">
+ {item.requirements.map((req, index) => (
+ <li key={index} className="flex items-start gap-2 text-sm text-gray-300">
+ <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mt-2 flex-shrink-0" />
+ {req}
+ </li>
+ ))}
+ </ul>
+ </div>
+ </CollapsibleContent>
+ </div>
+ </Collapsible>
+ ))}
+ </div>
+ </CardContent>
+ </Card>
+ </>
+ )}
 
-            {/* Q&A Chat Section */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-blue-900">
-                  <MessageCircle className="h-5 w-5" />
-                  Regulatory Q&A Assistant
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Sample Questions */}
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-blue-900">Quick Questions:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {sampleQuestions.map((question, index) => (
-                      <Button
-                        key={index}
-                        variant="outline"
-                        size="sm"
-                        className="text-xs h-8 text-blue-700 border-blue-200 hover:bg-blue-50 bg-transparent"
-                        onClick={() => handleChatSubmit(question)}
-                      >
-                        {question}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
+ {/* Q&A Chat Section */}
+ <Card className="bg-gray-800 border-gray-700">
+ <CardHeader>
+ <CardTitle className="flex items-center gap-2 text-white">
+ <MessageCircle className="h-5 w-5" />
+ Regulatory Q&A Assistant
+ </CardTitle>
+ </CardHeader>
+ <CardContent className="space-y-4">
+ {/* Sample Questions */}
+ <div className="space-y-2">
+ <p className="text-sm font-medium text-white">Quick Questions:</p>
+ <div className="flex flex-wrap gap-2">
+ {sampleQuestions.map((question, index) => (
+ <Button
+ key={index}
+ variant="outline"
+ size="sm"
+ className="text-xs h-8 text-gray-300 border-blue-200 hover:bg-blue-50 bg-transparent"
+ onClick={() => handleChatSubmit(question)}
+ >
+ {question}
+ </Button>
+ ))}
+ </div>
+ </div>
 
-                <Separator />
+ <Separator />
 
-                {/* Chat Messages */}
-                <ScrollArea className="h-64 w-full">
-                  <div className="space-y-4">
-                    {chatMessages.map((message) => (
-                      <div
-                        key={message.id}
-                        className={`flex ${message.type === "user" ? "justify-end" : "justify-start"}`}
-                      >
-                        <div
-                          className={`max-w-[80%] rounded-lg p-3 ${
-                            message.type === "user" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-900"
-                          }`}
-                        >
-                          <p className="text-sm">{message.content}</p>
-                          {message.sources && (
-                            <div className="mt-2 pt-2 border-t border-gray-200">
-                              <p className="text-xs text-gray-600">Sources: {message.sources.join(", ")}</p>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </ScrollArea>
+ {/* Chat Messages */}
+ <ScrollArea className="h-64 w-full">
+ <div className="space-y-4">
+ {chatMessages.map((message) => (
+ <div
+ key={message.id}
+ className={`flex ${message.type === "user" ? "justify-end" : "justify-start"}`}
+ >
+ <div
+ className={`max-w-[80%] rounded-lg p-3 ${
+ message.type === "user" ? "bg-blue-600 text-white" : "bg-gray-700 text-white"
+ }`}
+ >
+ <p className="text-sm">{message.content}</p>
+ {message.sources && (
+ <div className="mt-2 pt-2 border-t border-gray-200">
+ <p className="text-xs text-gray-600">Sources: {message.sources.join(", ")}</p>
+ </div>
+ )}
+ </div>
+ </div>
+ ))}
+ </div>
+ </ScrollArea>
 
-                {/* Chat Input */}
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="Ask about FDA or CLIA requirements..."
-                    value={chatInput}
-                    onChange={(e) => setChatInput(e.target.value)}
-                    onKeyPress={(e) => e.key === "Enter" && handleChatSubmit()}
-                    className="flex-1"
-                  />
-                  <Button
-                    onClick={() => handleChatSubmit()}
-                    disabled={!chatInput.trim()}
-                    size="sm"
-                    className="bg-blue-600 hover:bg-blue-700"
-                  >
-                    <Send className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </div>
-      <footer className="bg-white border-t border-gray-200 mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="text-sm font-semibold text-gray-900 mb-4">Product</h3>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li>
-                  <a href="#compliance" className="hover:text-blue-600 transition-colors">
-                    Compliance Analysis
-                  </a>
-                </li>
-                <li>
-                  <a href="#reports" className="hover:text-blue-600 transition-colors">
-                    Gap Reports
-                  </a>
-                </li>
-                <li>
-                  <a href="#qa" className="hover:text-blue-600 transition-colors">
-                    Regulatory Q&A
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-sm font-semibold text-gray-900 mb-4">Resources</h3>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li>
-                  <a
-                    href="https://www.fda.gov/medical-devices/in-vitro-diagnostics/laboratory-developed-tests"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-blue-600 transition-colors"
-                  >
-                    FDA Guidance
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="https://www.cms.gov/regulations-and-guidance/legislation/clia"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-blue-600 transition-colors"
-                  >
-                    CLIA Requirements
-                  </a>
-                </li>
-                <li>
-                  <a href="#docs" className="hover:text-blue-600 transition-colors">
-                    Documentation
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-sm font-semibold text-gray-900 mb-4">Support</h3>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li>
-                  <a href="#help" className="hover:text-blue-600 transition-colors">
-                    Help Center
-                  </a>
-                </li>
-                <li>
-                  <a href="mailto:support@ldtcompliance.com" className="hover:text-blue-600 transition-colors">
-                    Contact Us
-                  </a>
-                </li>
-                <li>
-                  <a href="#status" className="hover:text-blue-600 transition-colors">
-                    API Status
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-sm font-semibold text-gray-900 mb-4">Legal</h3>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li>
-                  <a href="#privacy" className="hover:text-blue-600 transition-colors">
-                    Privacy Policy
-                  </a>
-                </li>
-                <li>
-                  <a href="#terms" className="hover:text-blue-600 transition-colors">
-                    Terms of Service
-                  </a>
-                </li>
-                <li>
-                  <a href="#security" className="hover:text-blue-600 transition-colors">
-                    Security
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-200 mt-8 pt-8 text-center text-sm text-gray-600">
-            <p>© 2024 LDT Compliance Copilot. Built for regulatory professionals.</p>
-          </div>
-        </div>
-      </footer>
-    </div>
-  )
+ {/* Chat Input */}
+ <div className="flex gap-2">
+ <Input
+ placeholder="Ask about FDA or CLIA requirements..."
+ value={chatInput}
+ onChange={(e) => setChatInput(e.target.value)}
+ onKeyPress={(e) => e.key === "Enter" && handleChatSubmit()}
+ className="flex-1"
+ />
+ <Button
+ onClick={() => handleChatSubmit()}
+ disabled={!chatInput.trim()}
+ size="sm"
+ className="bg-blue-600 hover:bg-blue-700"
+ >
+ <Send className="h-4 w-4" />
+ </Button>
+ </div>
+ </CardContent>
+ </Card>
+ </div>
+ </div>
+ </div>
+ <footer className="bg-gray-900 border-t border-gray-700 mt-16">
+ <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+ <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+ <div>
+ <h3 className="text-sm font-semibold text-white mb-4">Product</h3>
+ <ul className="space-y-2 text-sm text-gray-400">
+ <li>
+ <a href="#compliance" className="hover:text-blue-600 transition-colors">
+ Compliance Analysis
+ </a>
+ </li>
+ <li>
+ <a href="#reports" className="hover:text-blue-600 transition-colors">
+ Gap Reports
+ </a>
+ </li>
+ <li>
+ <a href="#qa" className="hover:text-blue-600 transition-colors">
+ Regulatory Q&A
+ </a>
+ </li>
+ </ul>
+ </div>
+ <div>
+ <h3 className="text-sm font-semibold text-white mb-4">Resources</h3>
+ <ul className="space-y-2 text-sm text-gray-400">
+ <li>
+ <a
+ href="https://www.fda.gov/medical-devices/in-vitro-diagnostics/laboratory-developed-tests"
+ target="_blank"
+ rel="noopener noreferrer"
+ className="hover:text-blue-600 transition-colors"
+ >
+ FDA Guidance
+ </a>
+ </li>
+ <li>
+ <a
+ href="https://www.cms.gov/regulations-and-guidance/legislation/clia"
+ target="_blank"
+ rel="noopener noreferrer"
+ className="hover:text-blue-600 transition-colors"
+ >
+ CLIA Requirements
+ </a>
+ </li>
+ <li>
+ <a href="#docs" className="hover:text-blue-600 transition-colors">
+ Documentation
+ </a>
+ </li>
+ </ul>
+ </div>
+ <div>
+ <h3 className="text-sm font-semibold text-white mb-4">Support</h3>
+ <ul className="space-y-2 text-sm text-gray-400">
+ <li>
+ <a href="#help" className="hover:text-blue-600 transition-colors">
+ Help Center
+ </a>
+ </li>
+ <li>
+ <a href="mailto:support@ldtcompliance.com" className="hover:text-blue-600 transition-colors">
+ Contact Us
+ </a>
+ </li>
+ <li>
+ <a href="#status" className="hover:text-blue-600 transition-colors">
+ API Status
+ </a>
+ </li>
+ </ul>
+ </div>
+ <div>
+ <h3 className="text-sm font-semibold text-white mb-4">Legal</h3>
+ <ul className="space-y-2 text-sm text-gray-400">
+ <li>
+ <a href="#privacy" className="hover:text-blue-600 transition-colors">
+ Privacy Policy
+ </a>
+ </li>
+ <li>
+ <a href="#terms" className="hover:text-blue-600 transition-colors">
+ Terms of Service
+ </a>
+ </li>
+ <li>
+ <a href="#security" className="hover:text-blue-600 transition-colors">
+ Security
+ </a>
+ </li>
+ </ul>
+ </div>
+ </div>
+ <div className="border-t border-gray-200 mt-8 pt-8 text-center text-sm text-gray-400">
+ <p>© 2024 LDT Compliance Copilot. Built for regulatory professionals.</p>
+ </div>
+ </div>
+ </footer>
+ </div>
