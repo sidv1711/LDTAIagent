@@ -68,6 +68,8 @@ jspm_packages/
 .vscode/
 .idea/
 
+*.docx
+
 # OS
 .DS_Store
 Thumbs.db

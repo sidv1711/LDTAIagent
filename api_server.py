@@ -20,7 +20,7 @@ load_dotenv()
 # Import our existing agent functionality
 from agent.run import generate_gap_report, ask_compliance_question, analyze_completeness, extract_text_from_file
 from agent.knowledge_base import knowledge_base
-from utils.pdf_generator_improved import generate_compliance_pdf
+from utils.pdf_generator import generate_compliance_pdf
 
 # Initialize FastAPI app
 app = FastAPI(

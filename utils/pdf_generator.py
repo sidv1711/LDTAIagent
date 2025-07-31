@@ -55,15 +55,22 @@ def generate_natural_executive_summary(analysis_data):
         risk = "critical regulatory risk"
         action = "immediate and comprehensive intervention"
     
-    summary = f"""Our comprehensive analysis of {filename} reveals {status} with an overall score of {score}%. 
+    # Clean filename more aggressively - completely rebuild it
+    clean_filename = re.sub(r'[^\w]', ' ', filename)  # Replace ALL non-word chars with spaces
+    clean_filename = re.sub(r'\s+', ' ', clean_filename).strip()  # Normalize spaces
+    if len(clean_filename) > 50:
+        clean_filename = clean_filename[:50] + "..."
+    
 
-The regulatory assessment identified {present_count} compliant sections that meet current FDA and CLIA requirements, demonstrating the laboratory's understanding of key regulatory principles. However, {missing_count} critical sections require attention to achieve full regulatory compliance.
+    
+    # Build the summary completely from scratch with clean text
+    summary = "Our comprehensive analysis of " + clean_filename + " reveals " + status + " with an overall score of " + str(score) + "%."
+    summary += "\n\nThe regulatory assessment identified " + str(present_count) + " compliant sections that meet current FDA and CLIA requirements, demonstrating the laboratory's understanding of key regulatory principles. However, " + str(missing_count) + " critical sections require attention to achieve full regulatory compliance."
+    summary += "\n\nThis analysis indicates " + risk + " for the current submission. The identified gaps primarily relate to mandatory documentation requirements under FDA 21 CFR Parts 809 and 820, as well as CLIA laboratory standards. These deficiencies could result in regulatory delays or rejection if not addressed prior to submission."
+    summary += "\n\nThe laboratory should prioritize " + action + " to address all identified gaps. Success in remediation will significantly improve approval likelihood and demonstrate commitment to regulatory excellence. All missing sections represent mandatory requirements rather than optional enhancements, making their completion essential for regulatory approval."
+    summary += "\n\nThis assessment provides a roadmap for achieving full compliance while maintaining the quality standards expected by regulatory authorities. Implementation of the recommended actions will position the laboratory for successful regulatory review and approval."
+    
 
-This analysis indicates {risk} for the current submission. The identified gaps primarily relate to mandatory documentation requirements under FDA 21 CFR Parts 809 and 820, as well as CLIA laboratory standards. These deficiencies could result in regulatory delays or rejection if not addressed prior to submission.
-
-The laboratory should prioritize {action} to address all identified gaps. Success in remediation will significantly improve approval likelihood and demonstrate commitment to regulatory excellence. All missing sections represent mandatory requirements rather than optional enhancements, making their completion essential for regulatory approval.
-
-This assessment provides a roadmap for achieving full compliance while maintaining the quality standards expected by regulatory authorities. Implementation of the recommended actions will position the laboratory for successful regulatory review and approval."""
 
     return summary
 
@@ -174,6 +181,7 @@ def generate_compliance_pdf(report_data):
     Returns:
         BytesIO object containing the PDF
     """
+
     buffer = io.BytesIO()
     
     # Create document
@@ -232,11 +240,11 @@ def generate_compliance_pdf(report_data):
     score_style = ParagraphStyle(
         'ScoreStyle',
         parent=styles['Normal'],
-        fontSize=56,  # Increased font size
+        fontSize=48,  # Slightly smaller to prevent overlap
         alignment=TA_CENTER,
         textColor=HexColor('#10b981') if report_data.get('score', 0) >= 70 else HexColor('#ef4444'),
-        spaceAfter=15,
-        spaceBefore=10
+        spaceAfter=0,   # No space - using explicit Spacer instead
+        spaceBefore=15
     )
     
     # Build story
@@ -280,7 +288,11 @@ def generate_compliance_pdf(report_data):
     # FIXED Compliance Score Section - score and interpretation separated
     story.append(Paragraph("Overall Compliance Score", heading_style))
     score = report_data.get('score', 0)
+
     story.append(Paragraph(f"{score}%", score_style))
+    
+    # Add explicit spacer instead of relying on spaceAfter/spaceBefore
+    story.append(Spacer(1, 50))  # 50 points of space - much larger gap
     
     # Score interpretation - UNDERNEATH the score
     if score >= 90:
@@ -299,12 +311,13 @@ def generate_compliance_pdf(report_data):
     interp_style = ParagraphStyle(
         'InterpStyle',
         parent=body_style,
-        fontSize=14,
+        fontSize=13,  # Slightly smaller
         alignment=TA_CENTER,
         textColor=color,
-        spaceBefore=10,
-        spaceAfter=30
+        spaceBefore=0,   # No space since we have explicit Spacer above
+        spaceAfter=35
     )
+
     story.append(Paragraph(interpretation, interp_style))
     
     # Section 2: IMPROVED Executive Summary - Natural language
@@ -312,10 +325,22 @@ def generate_compliance_pdf(report_data):
     
     # Generate natural executive summary
     natural_summary = generate_natural_executive_summary(report_data)
+    
+
+    
+    # SUPER AGGRESSIVE text cleaning - rebuild the text completely
+    natural_summary = re.sub(r'[^\w\s\.\,\!\?\;\:\(\)\-\%]', '', natural_summary)  # Remove weird characters
+    natural_summary = re.sub(r'\s+', ' ', natural_summary)  # Replace multiple spaces with single space
+    natural_summary = re.sub(r'\n\s*\n', '\n\n', natural_summary)  # Fix paragraph breaks
+    natural_summary = re.sub(r'^\s+|\s+$', '', natural_summary, flags=re.MULTILINE)  # Trim line ends
+    natural_summary = natural_summary.replace('\t', ' ')  # Replace tabs with spaces
+    natural_summary = natural_summary.strip()  # Trim overall
+    
     paragraphs = natural_summary.split('\n\n')
     for para in paragraphs:
         if para.strip():
-            story.append(Paragraph(para.strip(), body_style))
+            clean_para = para.strip()
+            story.append(Paragraph(clean_para, body_style))
     
     story.append(Spacer(1, 20))
     
