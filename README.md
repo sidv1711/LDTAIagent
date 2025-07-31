@@ -18,6 +18,21 @@ Get instant regulatory compliance analysis with AI-powered gap identification an
 - **📊 Real-time Status**: Monitor API connectivity and system health
 - **🎨 Modern UI**: Professional dark theme with responsive design
 
+## 🛠️ Recent Cleanup (July 2025)
+
+This repository was fully sanitized for **public release**:
+
+1. **Removed large binaries & build artefacts** (`frontend/.next`, `__pycache__`, `*.pyc`, etc.)
+2. **Stripped all debug logging** from `utils/pdf_generator.py` and other modules.
+3. **Fixed PDF formatting** – compliance score spacing + executive summary word-wrapping.
+4. **Hardened `.gitignore`** – now blocks env files, caches, build outputs, and `*.docx` source docs.
+5. **Rewrote Git history** to purge the accidentally-committed `.env` file and oversized `node_modules/` objects.
+6. **Comprehensive cleanup commit** (`Cleanup: remove debug logs, untrack build outputs and cache files, update gitignore`).
+
+With these changes the repo is lightweight, leak-free, and safe for open-source visibility.
+
+---
+
 ## 🏗️ Architecture
 
 ```
