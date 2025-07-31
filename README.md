@@ -9,6 +9,29 @@ Get instant regulatory compliance analysis with AI-powered gap identification an
 ![FastAPI](https://img.shields.io/badge/Backend-FastAPI-teal)
 ![NVIDIA](https://img.shields.io/badge/AI-NVIDIA%20Nemotron-green)
 
+## 🛠️ About This Fork
+
+This repository is a **fork** of the excellent [build-an-agent workshop](https://github.com/Hannahhiendo/build-an-agent) – a repo that teaches the basics of autonomous agents with LLMs. For the 2025 *NVIDIA AI Agent* hackathon we had **just 2 hours** to transform that educational scaffold into a production-ready **LDT Compliance Copilot**.
+
+### What We Inherited from `build-an-agent`
+1. Tutorial notebooks and minimal Python agent classes (no web API).
+2. Generic "Document Generator" agent – nothing about FDA / CLIA.
+3. Workshop artefacts (`.devx`, sample data, checkpoints) checked into Git.
+4. No frontend & no deployment pipeline; everything ran locally in Jupyter.
+
+### What We Shipped in 2 Hours
+1. **Full Stack Upgrade** – FastAPI backend + Next.js 15/Turbopack frontend.
+2. **Regulatory Intelligence** – gap-analysis engine (`agent/gap_critic.py`) powered by NVIDIA Nemotron 340B and FAISS KB.
+3. **PDF Reporting** – fully-styled professional PDF via ReportLab.
+4. **Repo Hygiene** – purged secrets & large binaries, hardened `.gitignore`.
+5. **One-click Brev Deployment** – push-to-VM using `brev_setup.md`.
+6. **Docs & Demo** – live endpoint and this README for judges.
+
+### Why It Matters
+The *Elizabeth Holmes / Theranos* case underscored the need for rigorous validation of Laboratory Developed Tests. FDA scrutiny is rising; our copilot immediately flags compliance gaps against **21 CFR § 809/820** and **CLIA**, helping labs avoid Theranos-style pitfalls.
+
+---
+
 ## ✨ Features
 
 - **🚀 Instant Analysis**: Upload LDT submissions and get compliance analysis in under 60 seconds
@@ -17,21 +40,6 @@ Get instant regulatory compliance analysis with AI-powered gap identification an
 - **💬 Q&A Assistant**: Interactive regulatory assistant with knowledge base
 - **📊 Real-time Status**: Monitor API connectivity and system health
 - **🎨 Modern UI**: Professional dark theme with responsive design
-
-## 🛠️ Recent Cleanup (July 2025)
-
-This repository was fully sanitized for **public release**:
-
-1. **Removed large binaries & build artefacts** (`frontend/.next`, `__pycache__`, `*.pyc`, etc.)
-2. **Stripped all debug logging** from `utils/pdf_generator.py` and other modules.
-3. **Fixed PDF formatting** – compliance score spacing + executive summary word-wrapping.
-4. **Hardened `.gitignore`** – now blocks env files, caches, build outputs, and `*.docx` source docs.
-5. **Rewrote Git history** to purge the accidentally-committed `.env` file and oversized `node_modules/` objects.
-6. **Comprehensive cleanup commit** (`Cleanup: remove debug logs, untrack build outputs and cache files, update gitignore`).
-
-With these changes the repo is lightweight, leak-free, and safe for open-source visibility.
-
----
 
 ## 🏗️ Architecture
 
@@ -115,6 +123,21 @@ npm run dev
 3. **Review Results**: View compliance score, missing sections, and recommendations
 4. **Download Report**: Get professional PDF report with detailed guidance
 5. **Ask Questions**: Use the Q&A assistant for regulatory clarifications
+
+## 🚀 Tech Stack & Approach
+
+| Layer | Technology |
+|-------|------------|
+| UI / SPA | Next.js 15 (Turbopack), Tailwind CSS |
+| Backend API | FastAPI + Uvicorn |
+| AI / LLM | NVIDIA Nemotron 4–340B via Integrate API |
+| Vector Search | FAISS in-memory index |
+| PDF Reports | ReportLab |
+| DevOps | Brev run-on-push workflow (single `brev.yaml`) |
+
+Brev spins up a throw-away VM on every PR so judges could hit a live endpoint without manual infra.  A single `brev_setup.md` script installs Python deps, restores vector indexes, builds the Next.js app, and starts both servers under `tmux`.
+
+---
 
 ## 🔌 API Endpoints
 
